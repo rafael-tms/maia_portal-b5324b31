@@ -1,5 +1,13 @@
 import { supabase } from './supabase-client.js'
 
+// Normaliza caminhos de assets para garantir prefixo correto
+function normalizeAssetPath(path) {
+  if (!path) return 'images/soccer-ball-1.png';
+  if (path.startsWith('http') || path.startsWith('/')) return path;
+  if (!path.startsWith('images/')) return 'images/' + path;
+  return path;
+}
+
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -203,7 +211,7 @@ async function updateToday() {
               iconWrap.className = 'icon-wrap small'
               
               const iconImg = document.createElement('img')
-              iconImg.src = stat.icon || 'images/soccer-ball-1.png'
+              iconImg.src = normalizeAssetPath(stat.icon)
               iconImg.loading = 'lazy'
               iconImg.width = 50
               

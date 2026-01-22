@@ -1,5 +1,13 @@
 import { supabase } from './supabase-client.js'
 
+// Normaliza caminhos de assets para garantir prefixo correto
+function normalizeAssetPath(path) {
+  if (!path) return 'images/soccer-ball-1.png';
+  if (path.startsWith('http') || path.startsWith('/')) return path;
+  if (!path.startsWith('images/')) return 'images/' + path;
+  return path;
+}
+
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -141,14 +149,14 @@ async function updateTrajectory() {
                     const iconWrap = document.createElement('div')
                     iconWrap.className = 'icon-wrap small'
                     const iconImg = document.createElement('img')
-                    iconImg.src = stat.icon || 'images/soccer-ball-1.png'
+                    iconImg.src = normalizeAssetPath(stat.icon)
                     iconImg.loading = 'lazy'
                     iconImg.width = 50
                     iconWrap.appendChild(iconImg)
                     const seasonDiv = document.createElement('div')
                     seasonDiv.className = 'season'
                     
-                    const icon = stat.icon || 'images/soccer-ball-1.png'
+                    const icon = normalizeAssetPath(stat.icon)
                     if (icon.includes('partidas.png')) {
                         seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
                     } else if (icon.includes('goal-1.png')) {
@@ -217,14 +225,14 @@ async function updateTrajectory() {
                         const iconWrap = document.createElement('div')
                         iconWrap.className = 'icon-wrap small'
                         const iconImg = document.createElement('img')
-                        iconImg.src = stat.icon || 'images/soccer-ball-1.png'
+                        iconImg.src = normalizeAssetPath(stat.icon)
                         iconImg.loading = 'lazy'
                         iconImg.width = 50
                         iconWrap.appendChild(iconImg)
                         const seasonDiv = document.createElement('div')
                         seasonDiv.className = 'season'
                         
-                        const icon = stat.icon || 'images/soccer-ball-1.png'
+                        const icon = normalizeAssetPath(stat.icon)
                         if (icon.includes('partidas.png')) {
                             seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
                         } else if (icon.includes('goal-1.png')) {
