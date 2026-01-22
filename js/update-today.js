@@ -1,46 +1,5 @@
 import { supabase } from './supabase-client.js'
 
-// Normaliza caminhos de ícones para garantir que funcionem
-function normalizeIconSrc(icon) {
-  if (!icon) return 'images/soccer-ball-1.png';
-  const trimmed = icon.trim();
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-  if (trimmed.startsWith('/')) return trimmed;
-  if (trimmed.startsWith('images/')) return trimmed;
-  return `images/${trimmed}`;
-}
-
-// Detecta chave i18n baseado no ícone ou texto
-function getStatI18nKey(icon, text) {
-  const iconLower = (icon || '').toLowerCase();
-  const textLower = (text || '').toLowerCase();
-  
-  // Detecta por ícone (mais confiável)
-  if (iconLower.includes('partida')) return 'matches';
-  if (iconLower.includes('goal') || iconLower.includes('gol')) return 'goals';
-  if (iconLower.includes('assist')) return 'assists';
-  if (iconLower.includes('time.png') || iconLower.includes('calendar')) return 'season_label';
-  
-  // Detecta por texto (fallback)
-  if (textLower.includes('partida')) return 'matches';
-  if (textLower.includes('gol')) return 'goals';
-  if (textLower.includes('assist')) return 'assists';
-  if (textLower.includes('temporada')) return 'season_label';
-  
-  return null;
-}
-
-// Retorna label padrão em português
-function getDefaultLabel(i18nKey) {
-  const labels = {
-    'matches': 'Partidas',
-    'goals': 'Gols',
-    'assists': 'Assistências',
-    'season_label': 'Temporada'
-  };
-  return labels[i18nKey] || '';
-}
-
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -97,6 +56,7 @@ async function updateToday() {
         let title = card.title;
         let newsText = card.news_text;
         let newsLink = card.news_link;
+        // let category = card.category; // Categoria geralmente usa chaves fixas
 
         // Se houver tradução para o idioma atual (e não for PT), sobrescreve
         if (translations && translations[currentLang] && currentLang !== 'pt') {
@@ -120,18 +80,20 @@ async function updateToday() {
         leftCol.style.alignItems = 'center'
         leftCol.style.justifyContent = 'center'
         leftCol.style.overflow = 'hidden'
-        leftCol.style.padding = '10px'
+        leftCol.style.padding = '10px' // Ajuste de padding (50% menor conforme solicitado anteriormente)
         
         const logoImg = document.createElement('img')
         logoImg.src = card.left_image_url
         logoImg.alt = title
         
         if (card.type === 'news') {
+            // Estilo para Notícias (Foto)
             logoImg.style.width = '150px'
             logoImg.style.height = '150px'
             logoImg.style.objectFit = 'contain'
             logoImg.style.borderRadius = '10px'
         } else {
+            // Estilo para Estatísticas (Logo)
             logoImg.style.maxWidth = '100%'
             logoImg.style.maxHeight = '150px'
             logoImg.style.width = 'auto'
@@ -214,6 +176,8 @@ async function updateToday() {
           if (newsLink && newsLink !== '#') {
             const link = document.createElement('a')
             link.className = 'text-m'
+            link.textContent = 'Saiba mais' // Poderia ser traduzido via i18n também, mas fixo por enquanto ou data-i18n
+            link.setAttribute('data-i18n', 'learn_more') // Adicionando suporte i18n se existir chave
             link.innerHTML = '<span data-i18n="learn_more">Saiba mais</span>'
             link.href = newsLink
             link.style.textDecoration = 'none'
@@ -239,28 +203,27 @@ async function updateToday() {
               iconWrap.className = 'icon-wrap small'
               
               const iconImg = document.createElement('img')
-              const iconSrc = normalizeIconSrc(stat.icon)
-              iconImg.src = iconSrc
+              iconImg.src = stat.icon || 'images/soccer-ball-1.png'
               iconImg.loading = 'lazy'
               iconImg.width = 50
-              iconImg.onerror = () => { iconImg.src = 'images/soccer-ball-1.png' }
               
               iconWrap.appendChild(iconImg)
               
               const seasonDiv = document.createElement('div')
               seasonDiv.className = 'season'
               
-              // Detecta chave i18n robustamente
-              const i18nKey = getStatI18nKey(stat.icon, stat.text);
-              if (i18nKey) {
-                // Extrai número do início do texto (ex: "09" de "09 Partidas" ou "09")
-                const number = (stat.text || '').match(/^\d+/)?.[0] || '';
-                // Remove número do label, ou usa label padrão se só havia número
-                let label = (stat.text || '').replace(/^\d+\s*/, '').trim();
-                if (!label) label = getDefaultLabel(i18nKey);
-                seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
+              if (stat.icon && stat.icon.includes('partidas.png')) {
+                seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
+              } else if (stat.icon && stat.icon.includes('goal-1.png')) {
+                seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
+              } else if (stat.icon && stat.icon.includes('assitencia2.png')) {
+                seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
               } else {
-                seasonDiv.textContent = stat.text;
+                if (stat.text && stat.text.includes('Temporada')) {
+                    seasonDiv.innerHTML = stat.text.replace('Temporada', '<span data-i18n="season_label">Temporada</span>');
+                } else {
+                    seasonDiv.textContent = stat.text
+                }
               }
               
               itemWrap.appendChild(iconWrap)
@@ -281,11 +244,9 @@ async function updateToday() {
         container.appendChild(cardWrap)
       })
       
-      // Atualiza traduções após renderizar (com guard para evitar loop)
-      if (window.MaiaI18n && window.MaiaI18n.updatePageTranslations) {
-        window.__maiaTodayApplyingTranslations = true;
-        window.MaiaI18n.updatePageTranslations();
-        window.__maiaTodayApplyingTranslations = false;
+      // Atualiza traduções após renderizar (importante para elementos data-i18n injetados)
+      if (updatePageTranslations) {
+        updatePageTranslations();
       }
     } else {
       container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Nenhum card disponível.</div>'
@@ -302,8 +263,8 @@ if (document.readyState === 'loading') {
   updateToday()
 }
 
-// Ouve mudanças de idioma para re-renderizar (com guard para evitar loop)
+// Ouve mudanças de idioma para re-renderizar
 window.addEventListener('languageChanged', (e) => {
-    if (window.__maiaTodayApplyingTranslations) return;
+    // Prevent infinite loop or excessive re-rendering if dispatchEvent bubbles
     updateToday();
 });
