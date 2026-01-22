@@ -184,6 +184,7 @@ async function updateTrajectory() {
         // --- Parte Inferior (Categorias Extras) ---
         if (bottomCategories.length > 0) {
             const bottomContainer = document.createElement('div')
+            bottomContainer.className = 'trajectory-bottom-stats'
             bottomContainer.style.display = 'grid'
             // Cria colunas iguais baseadas no número de categorias (max 3)
             bottomContainer.style.gridTemplateColumns = `repeat(${bottomCategories.length}, 1fr)` 
