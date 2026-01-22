@@ -4,7 +4,25 @@ import { supabase } from './supabase-client.js'
 let cachedStats = null;
 const STORAGE_KEY = 'maia_player_stats_v1';
 
+// Helper para mostrar erro na UI
+function showError(message) {
+  const ids = ['stat-goals', 'stat-assists', 'stat-matches', 'stat-characteristics', 'stat-goals-per-game'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = '—';
+      el.title = message;
+    }
+  });
+  console.error('[update-stats] ' + message);
+}
+
 async function updateStats(langOverride) {
+  // Verifica se o Supabase inicializou corretamente
+  if (window.__SUPABASE_INIT_ERROR__ || !supabase) {
+    showError(window.__SUPABASE_INIT_ERROR__ || 'Supabase não inicializado');
+    return;
+  }
   let currentLang = langOverride;
   
   // Se não foi passado override, tenta descobrir o idioma
