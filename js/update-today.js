@@ -25,6 +25,13 @@ async function updateToday() {
   const container = document.getElementById('today-cards-container')
   if (!container) return
 
+  // Verifica se o Supabase inicializou corretamente
+  if (window.__SUPABASE_INIT_ERROR__ || !supabase) {
+    container.innerHTML = '<p style="color: #ff6b6b; text-align: center;">Erro ao carregar dados</p>';
+    console.error('[update-today]', window.__SUPABASE_INIT_ERROR__ || 'Supabase não inicializado');
+    return;
+  }
+
   // Detecta idioma atual (padrão 'pt')
   const currentLang = (window.MaiaI18n && window.MaiaI18n.getCurrentLanguage) 
     ? window.MaiaI18n.getCurrentLanguage() 
