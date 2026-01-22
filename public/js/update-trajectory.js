@@ -15,12 +15,30 @@ function getStatI18nKey(icon, text) {
   const iconLower = (icon || '').toLowerCase();
   const textLower = (text || '').toLowerCase();
   
-  if (iconLower.includes('partida') || textLower.includes('partida')) return 'matches';
-  if (iconLower.includes('goal') || iconLower.includes('gol') || textLower.includes('gol')) return 'goals';
-  if (iconLower.includes('assist') || textLower.includes('assist')) return 'assists';
-  if (iconLower.includes('time') || iconLower.includes('calendar') || textLower.includes('temporada')) return 'season_label';
+  // Detecta por ícone (mais confiável)
+  if (iconLower.includes('partida')) return 'matches';
+  if (iconLower.includes('goal') || iconLower.includes('gol')) return 'goals';
+  if (iconLower.includes('assist')) return 'assists';
+  if (iconLower.includes('time.png') || iconLower.includes('calendar')) return 'season_label';
+  
+  // Detecta por texto (fallback)
+  if (textLower.includes('partida')) return 'matches';
+  if (textLower.includes('gol')) return 'goals';
+  if (textLower.includes('assist')) return 'assists';
+  if (textLower.includes('temporada')) return 'season_label';
   
   return null;
+}
+
+// Retorna o label padrão para uma chave i18n
+function getDefaultLabel(i18nKey) {
+  const labels = {
+    'matches': 'Partidas',
+    'goals': 'Gols',
+    'assists': 'Assistências',
+    'season_label': 'Temporada'
+  };
+  return labels[i18nKey] || '';
 }
 
 function getCategoryI18nKey(catName) {
@@ -176,7 +194,9 @@ async function updateTrajectory() {
                     const i18nKey = getStatI18nKey(stat.icon, stat.text);
                     if (i18nKey) {
                         const number = (stat.text || '').match(/^\d+/)?.[0] || '';
-                        const label = (stat.text || '').replace(/^\d+\s*/, '');
+                        let label = (stat.text || '').replace(/^\d+\s*/, '').trim();
+                        // Se o texto era só número, usa o label padrão
+                        if (!label) label = getDefaultLabel(i18nKey);
                         seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
                     } else {
                         seasonDiv.textContent = stat.text;
@@ -252,7 +272,9 @@ async function updateTrajectory() {
                         const i18nKey = getStatI18nKey(stat.icon, stat.text);
                         if (i18nKey) {
                             const number = (stat.text || '').match(/^\d+/)?.[0] || '';
-                            const label = (stat.text || '').replace(/^\d+\s*/, '');
+                            let label = (stat.text || '').replace(/^\d+\s*/, '').trim();
+                            // Se o texto era só número, usa o label padrão
+                            if (!label) label = getDefaultLabel(i18nKey);
                             seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
                         } else {
                             seasonDiv.textContent = stat.text;
