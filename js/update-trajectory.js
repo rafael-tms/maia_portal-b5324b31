@@ -1,5 +1,46 @@
 import { supabase } from './supabase-client.js'
 
+// Normaliza caminhos de ícones para garantir que funcionem
+function normalizeIconSrc(icon) {
+  if (!icon) return 'images/soccer-ball-1.png';
+  const trimmed = icon.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+  if (trimmed.startsWith('/')) return trimmed;
+  if (trimmed.startsWith('images/')) return trimmed;
+  return `images/${trimmed}`;
+}
+
+// Detecta chave i18n baseado no ícone ou texto
+function getStatI18nKey(icon, text) {
+  const iconLower = (icon || '').toLowerCase();
+  const textLower = (text || '').toLowerCase();
+  
+  // Detecta por ícone (mais confiável)
+  if (iconLower.includes('partida')) return 'matches';
+  if (iconLower.includes('goal') || iconLower.includes('gol')) return 'goals';
+  if (iconLower.includes('assist')) return 'assists';
+  if (iconLower.includes('time.png') || iconLower.includes('calendar')) return 'season_label';
+  
+  // Detecta por texto (fallback)
+  if (textLower.includes('partida')) return 'matches';
+  if (textLower.includes('gol')) return 'goals';
+  if (textLower.includes('assist')) return 'assists';
+  if (textLower.includes('temporada')) return 'season_label';
+  
+  return null;
+}
+
+// Retorna label padrão em português
+function getDefaultLabel(i18nKey) {
+  const labels = {
+    'matches': 'Partidas',
+    'goals': 'Gols',
+    'assists': 'Assistências',
+    'season_label': 'Temporada'
+  };
+  return labels[i18nKey] || '';
+}
+
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -108,10 +149,9 @@ async function updateTrajectory() {
             contentDiv.style.gap = '20px'
         }
 
-        // Renderiza Categorias do Topo (Pode ter mais de uma)
+        // Renderiza Categorias do Topo
         topCategories.forEach((cat, index) => {
             const catContainer = document.createElement('div')
-            // Remove margin-top logic if grid is used, or keep it for vertical stacking if needed (though grid handles gap)
             if (index > 0 && topCategories.length === 1) catContainer.style.marginTop = '20px' 
 
             if (cat.name) {
@@ -141,23 +181,27 @@ async function updateTrajectory() {
                     const iconWrap = document.createElement('div')
                     iconWrap.className = 'icon-wrap small'
                     const iconImg = document.createElement('img')
-                    iconImg.src = stat.icon || 'images/soccer-ball-1.png'
+                    const iconSrc = normalizeIconSrc(stat.icon)
+                    iconImg.src = iconSrc
                     iconImg.loading = 'lazy'
                     iconImg.width = 50
+                    iconImg.onerror = () => { iconImg.src = 'images/soccer-ball-1.png' }
                     iconWrap.appendChild(iconImg)
+                    
                     const seasonDiv = document.createElement('div')
                     seasonDiv.className = 'season'
                     
-                    const icon = stat.icon || 'images/soccer-ball-1.png'
-                    if (icon.includes('partidas.png')) {
-                        seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
-                    } else if (icon.includes('goal-1.png')) {
-                        seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
-                    } else if (icon.includes('assitencia2.png')) {
-                        seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
+                    // Detecta chave i18n robustamente
+                    const i18nKey = getStatI18nKey(stat.icon, stat.text);
+                    if (i18nKey) {
+                      const number = (stat.text || '').match(/^\d+/)?.[0] || '';
+                      let label = (stat.text || '').replace(/^\d+\s*/, '').trim();
+                      if (!label) label = getDefaultLabel(i18nKey);
+                      seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
                     } else {
-                        seasonDiv.textContent = stat.text
+                      seasonDiv.textContent = stat.text;
                     }
+                    
                     itemWrap.appendChild(iconWrap)
                     itemWrap.appendChild(seasonDiv)
                     listDiv.appendChild(itemWrap)
@@ -171,13 +215,12 @@ async function updateTrajectory() {
         contentWrap.appendChild(contentDiv)
         grid.appendChild(leftCol)
         grid.appendChild(contentWrap)
-        cardWrap.appendChild(grid) // Adiciona parte superior ao card
+        cardWrap.appendChild(grid)
 
         // --- Parte Inferior (Categorias Extras) ---
         if (bottomCategories.length > 0) {
             const bottomContainer = document.createElement('div')
             bottomContainer.style.display = 'grid'
-            // Cria colunas iguais baseadas no número de categorias (max 3)
             bottomContainer.style.gridTemplateColumns = `repeat(${bottomCategories.length}, 1fr)` 
             bottomContainer.style.gap = '20px'
             bottomContainer.style.marginTop = '20px'
@@ -189,7 +232,6 @@ async function updateTrajectory() {
             bottomCategories.forEach((cat, index) => {
                 const catCol = document.createElement('div')
                 catCol.style.position = 'relative'
-                // Adiciona linha tracejada à esquerda se não for o primeiro
                 if (index > 0) {
                     catCol.style.borderLeft = '1px dashed rgba(255,255,255,0.2)'
                     catCol.style.paddingLeft = '20px'
@@ -197,6 +239,12 @@ async function updateTrajectory() {
 
                 if (cat.name) {
                     const catTitle = document.createElement('div')
+                    
+                    const catI18nKey = getCategoryI18nKey(cat.name);
+                    if (catI18nKey) {
+                        catTitle.setAttribute('data-i18n', catI18nKey);
+                    }
+                    
                     catTitle.textContent = cat.name
                     catTitle.style.color = '#3cc674'
                     catTitle.style.fontWeight = 'bold'
@@ -213,27 +261,31 @@ async function updateTrajectory() {
                     cat.items.forEach(stat => {
                         const itemWrap = document.createElement('div')
                         itemWrap.className = 'item-wrap'
-                        itemWrap.style.marginBottom = '8px' // Ajuste de espaçamento
+                        itemWrap.style.marginBottom = '8px'
                         const iconWrap = document.createElement('div')
                         iconWrap.className = 'icon-wrap small'
                         const iconImg = document.createElement('img')
-                        iconImg.src = stat.icon || 'images/soccer-ball-1.png'
+                        const iconSrc = normalizeIconSrc(stat.icon)
+                        iconImg.src = iconSrc
                         iconImg.loading = 'lazy'
                         iconImg.width = 50
+                        iconImg.onerror = () => { iconImg.src = 'images/soccer-ball-1.png' }
                         iconWrap.appendChild(iconImg)
+                        
                         const seasonDiv = document.createElement('div')
                         seasonDiv.className = 'season'
                         
-                        const icon = stat.icon || 'images/soccer-ball-1.png'
-                        if (icon.includes('partidas.png')) {
-                            seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
-                        } else if (icon.includes('goal-1.png')) {
-                            seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
-                        } else if (icon.includes('assitencia2.png')) {
-                            seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
+                        // Detecta chave i18n robustamente
+                        const i18nKey = getStatI18nKey(stat.icon, stat.text);
+                        if (i18nKey) {
+                          const number = (stat.text || '').match(/^\d+/)?.[0] || '';
+                          let label = (stat.text || '').replace(/^\d+\s*/, '').trim();
+                          if (!label) label = getDefaultLabel(i18nKey);
+                          seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
                         } else {
-                            seasonDiv.textContent = stat.text
+                          seasonDiv.textContent = stat.text;
                         }
+                        
                         itemWrap.appendChild(iconWrap)
                         itemWrap.appendChild(seasonDiv)
                         listDiv.appendChild(itemWrap)
@@ -249,9 +301,11 @@ async function updateTrajectory() {
         container.appendChild(cardWrap)
       })
 
-      // Atualiza traduções após renderizar
+      // Atualiza traduções após renderizar (com guard para evitar loop)
       if (window.MaiaI18n && window.MaiaI18n.updatePageTranslations) {
+        window.__maiaTrajectoryApplyingTranslations = true;
         window.MaiaI18n.updatePageTranslations();
+        window.__maiaTrajectoryApplyingTranslations = false;
       }
     } else {
       container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Nenhum card de trajetória disponível.</div>'
@@ -266,3 +320,9 @@ if (document.readyState === 'loading') {
 } else {
   updateTrajectory()
 }
+
+// Ouve mudanças de idioma para re-renderizar (com guard para evitar loop)
+window.addEventListener('languageChanged', (e) => {
+    if (window.__maiaTrajectoryApplyingTranslations) return;
+    updateTrajectory();
+});
