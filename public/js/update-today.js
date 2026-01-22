@@ -1,5 +1,15 @@
 import { supabase } from './supabase-client.js'
 
+// Normaliza caminho do ícone (ex: "time.png" → "images/time.png")
+function normalizeIconSrc(icon) {
+  if (!icon) return 'images/soccer-ball-1.png';
+  const trimmed = icon.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+  if (trimmed.startsWith('/')) return trimmed;
+  if (trimmed.startsWith('images/')) return trimmed;
+  return `images/${trimmed}`;
+}
+
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -203,9 +213,11 @@ async function updateToday() {
               iconWrap.className = 'icon-wrap small'
               
               const iconImg = document.createElement('img')
-              iconImg.src = stat.icon || 'images/soccer-ball-1.png'
+              const iconSrc = normalizeIconSrc(stat.icon)
+              iconImg.src = iconSrc
               iconImg.loading = 'lazy'
               iconImg.width = 50
+              iconImg.onerror = () => { iconImg.src = 'images/soccer-ball-1.png' }
               
               iconWrap.appendChild(iconImg)
               
