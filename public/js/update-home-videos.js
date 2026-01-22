@@ -47,7 +47,6 @@ async function updateHomeVideos() {
   if (!container) return
 
   try {
-    console.log('[maia] update-home-videos: buscando videos is_active=true e show_on_home=true...')
     const { data, error } = await supabase
       .from('videos')
       .select('*')
@@ -55,8 +54,6 @@ async function updateHomeVideos() {
       .eq('show_on_home', true)
       .limit(4)
       .order('created_at', { ascending: false })
-
-    console.log('[maia] update-home-videos: resposta', { count: data?.length, error, data })
 
     if (error) throw error
 

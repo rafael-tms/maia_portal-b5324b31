@@ -9,13 +9,10 @@ async function updateAbout() {
     : 'pt';
 
   try {
-    console.log('[maia] update-about: buscando dados...')
     const { data, error } = await supabase
       .from('about_info')
       .select('*')
       .order('display_order', { ascending: true })
-
-    console.log('[maia] update-about: resposta', { count: data?.length, error, data })
 
     if (error) throw error
 

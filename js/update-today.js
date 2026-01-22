@@ -64,13 +64,10 @@ async function updateToday() {
     : 'pt';
 
   try {
-    console.log('[maia] update-today: buscando dados...')
     const { data, error } = await supabase
       .from('today_cards')
       .select('*')
       .order('display_order', { ascending: true })
-
-    console.log('[maia] update-today: resposta', { count: data?.length, error, data })
 
     if (error) throw error
 
