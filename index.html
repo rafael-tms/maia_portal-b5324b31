@@ -16,12 +16,12 @@
     .gols-wrap {
       transform: skewY(6deg);
       transform-origin: center;
-      margin: 20px 0; /* Espaço extra para não sobrepor */
-      padding-top: 28.0665px !important; /* Reduzido em mais 10% (era 31.185px) */
-      padding-bottom: 28.0665px !important; /* Reduzido em mais 10% (era 31.185px) */
+      margin: 20px 0;
+      padding-top: 28.0665px !important;
+      padding-bottom: 28.0665px !important;
     }
     .gols-wrap > * {
-      transform: skewY(-6deg); /* Desinclina o conteúdo */
+      transform: skewY(-6deg);
     }
 
     /* Estilo de hover/active para bandeiras */
@@ -38,7 +38,7 @@
       position: absolute;
       top: 264px;
       left: 50%;
-      margin-left: -240px; /* Ancorado ao centro (desktop) */
+      margin-left: -240px;
       color: #39D28C;
       font-family: sans-serif;
       font-weight: bold;
@@ -48,15 +48,137 @@
     @media (max-width: 991px) {
       .futebolista-label {
         top: 244px;
-        margin-left: 10px; /* Ancorado ao centro (tablet) */
+        margin-left: 10px;
         font-size: 25px;
       }
     }
     @media (max-width: 479px) {
       .futebolista-label {
         top: 284px;
-        margin-left: 160px; /* Ancorado ao centro (mobile) */
+        margin-left: 160px;
         font-size: 21px;
+      }
+    }
+
+    /* === RESPONSIVIDADE DO SELETOR DE IDIOMAS === */
+    @media (max-width: 991px) {
+      #floating-lang-selector {
+        top: 20px !important;
+        right: 20px !important;
+        padding: 8px 15px !important;
+        gap: 12px !important;
+      }
+      #floating-lang-selector > span:first-child {
+        display: none !important;
+      }
+    }
+    @media (max-width: 479px) {
+      #floating-lang-selector {
+        top: 15px !important;
+        right: 10px !important;
+        left: 10px !important;
+        justify-content: center !important;
+        padding: 10px 15px !important;
+        gap: 10px !important;
+      }
+      #floating-lang-selector .lang-flag {
+        width: 28px !important;
+        height: 20px !important;
+      }
+    }
+
+    /* === RESPONSIVIDADE DAS MARGENS DA SEÇÃO STATS === */
+    @media (max-width: 991px) {
+      .grid-2.padding-m {
+        margin-left: 0 !important;
+      }
+      .grid-2.padding-m .col-left {
+        margin-left: 0 !important;
+      }
+    }
+
+    /* === RESPONSIVIDADE DA MONTAGEM/HERO IMAGE === */
+    @media (max-width: 767px) {
+      #home-montage-container,
+      #home-montage-fallback {
+        margin-left: 0 !important;
+        max-width: 100% !important;
+      }
+    }
+
+    /* === RESPONSIVIDADE DA CITAÇÃO === */
+    .quote-text {
+      font-size: 85px;
+    }
+    @media (max-width: 991px) {
+      .quote-text {
+        font-size: 50px !important;
+      }
+    }
+    @media (max-width: 479px) {
+      .quote-text {
+        font-size: 32px !important;
+      }
+    }
+
+    /* === RESPONSIVIDADE DO FOOTER CONTACT === */
+    @media (max-width: 991px) {
+      .footer-container .contact-wrap {
+        margin-left: 150px !important;
+      }
+      .footer-container .contact-wrap h2 {
+        font-size: 32px !important;
+      }
+      .footer-container .contact-wrap p {
+        font-size: 20px !important;
+      }
+    }
+    @media (max-width: 767px) {
+      .footer-container .contact-wrap {
+        margin-left: 0 !important;
+        width: 90% !important;
+        max-width: 350px !important;
+        text-align: center !important;
+        padding: 20px !important;
+      }
+      .footer-container .contact-wrap h2 {
+        font-size: 28px !important;
+        white-space: normal !important;
+      }
+      .footer-container .contact-wrap p {
+        font-size: 18px !important;
+        margin: 15px 0 !important;
+      }
+      .footer-container .contact-wrap > div {
+        margin: 0 auto 30px auto !important;
+      }
+    }
+    @media (max-width: 479px) {
+      .footer-container .contact-wrap h2 {
+        font-size: 24px !important;
+      }
+      .footer-container .contact-wrap p {
+        font-size: 16px !important;
+      }
+    }
+
+    /* === RESPONSIVIDADE DO TEXTO "CONVOCADA" === */
+    @media (max-width: 991px) {
+      .media-wrap > div[style*="font-size: 200px"] {
+        font-size: 120px !important;
+        margin-top: 200px !important;
+      }
+    }
+    @media (max-width: 767px) {
+      .media-wrap > div[style*="font-size: 200px"] {
+        font-size: 80px !important;
+        margin-top: 120px !important;
+      }
+    }
+    @media (max-width: 479px) {
+      .media-wrap > div[style*="font-size: 200px"] {
+        font-size: 50px !important;
+        margin-top: 80px !important;
       }
     }
   </style>
