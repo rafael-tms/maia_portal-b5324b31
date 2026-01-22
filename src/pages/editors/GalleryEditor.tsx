@@ -7,6 +7,7 @@ interface GalleryItem {
   title: string
   image_url: string
   display_order: number
+  is_active?: boolean
 }
 
 // Componente ImageField reutilizável
@@ -27,7 +28,7 @@ const ImageField: React.FC<{
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
       const filePath = `gallery/${fileName}` // Pasta gallery
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('images')
         .upload(filePath, file)
 

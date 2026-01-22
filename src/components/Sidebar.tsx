@@ -52,14 +52,6 @@ const Sidebar: React.FC = () => {
                 }}
               >
                 <span>{item.name}</span>
-                {item.status === 'dev' && (
-                  <span style={{ 
-                    fontSize: '10px', 
-                    backgroundColor: location.pathname === item.path ? 'rgba(0,0,0,0.2)' : '#333', 
-                    padding: '2px 6px', 
-                    borderRadius: '4px' 
-                  }}>DEV</span>
-                )}
               </Link>
             </li>
           ))}

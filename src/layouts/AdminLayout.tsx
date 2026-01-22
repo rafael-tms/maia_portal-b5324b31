@@ -20,10 +20,6 @@ const AdminLayout: React.FC = () => {
     }
   }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    navigate('/')
-  }
 
   if (loading) return <div style={{ color: '#fff', textAlign: 'center', marginTop: '50px' }}>Carregando...</div>
 
