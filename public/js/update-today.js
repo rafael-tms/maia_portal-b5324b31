@@ -1,46 +1,5 @@
 import { supabase } from './supabase-client.js'
 
-// Normaliza caminho do ícone (ex: "time.png" → "images/time.png")
-function normalizeIconSrc(icon) {
-  if (!icon) return 'images/soccer-ball-1.png';
-  const trimmed = icon.trim();
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-  if (trimmed.startsWith('/')) return trimmed;
-  if (trimmed.startsWith('images/')) return trimmed;
-  return `images/${trimmed}`;
-}
-
-// Detecta chave i18n baseado no ícone ou texto
-function getStatI18nKey(icon, text) {
-  const iconLower = (icon || '').toLowerCase();
-  const textLower = (text || '').toLowerCase();
-  
-  // Detecta por ícone (mais confiável)
-  if (iconLower.includes('partida')) return 'matches';
-  if (iconLower.includes('goal') || iconLower.includes('gol')) return 'goals';
-  if (iconLower.includes('assist')) return 'assists';
-  if (iconLower.includes('time.png') || iconLower.includes('calendar')) return 'season_label';
-  
-  // Detecta por texto (fallback)
-  if (textLower.includes('partida')) return 'matches';
-  if (textLower.includes('gol')) return 'goals';
-  if (textLower.includes('assist')) return 'assists';
-  if (textLower.includes('temporada')) return 'season_label';
-  
-  return null;
-}
-
-// Retorna o label padrão para uma chave i18n
-function getDefaultLabel(i18nKey) {
-  const labels = {
-    'matches': 'Partidas',
-    'goals': 'Gols',
-    'assists': 'Assistências',
-    'season_label': 'Temporada'
-  };
-  return labels[i18nKey] || '';
-}
-
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -244,26 +203,27 @@ async function updateToday() {
               iconWrap.className = 'icon-wrap small'
               
               const iconImg = document.createElement('img')
-              const iconSrc = normalizeIconSrc(stat.icon)
-              iconImg.src = iconSrc
+              iconImg.src = stat.icon || 'images/soccer-ball-1.png'
               iconImg.loading = 'lazy'
               iconImg.width = 50
-              iconImg.onerror = () => { iconImg.src = 'images/soccer-ball-1.png' }
               
               iconWrap.appendChild(iconImg)
               
               const seasonDiv = document.createElement('div')
               seasonDiv.className = 'season'
               
-              const i18nKey = getStatI18nKey(stat.icon, stat.text);
-              if (i18nKey) {
-                const number = (stat.text || '').match(/^\d+/)?.[0] || '';
-                let label = (stat.text || '').replace(/^\d+\s*/, '').trim();
-                // Se o texto era só número, usa o label padrão
-                if (!label) label = getDefaultLabel(i18nKey);
-                seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
+              if (stat.icon && stat.icon.includes('partidas.png')) {
+                seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
+              } else if (stat.icon && stat.icon.includes('goal-1.png')) {
+                seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
+              } else if (stat.icon && stat.icon.includes('assitencia2.png')) {
+                seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
               } else {
-                seasonDiv.textContent = stat.text;
+                if (stat.text && stat.text.includes('Temporada')) {
+                    seasonDiv.innerHTML = stat.text.replace('Temporada', '<span data-i18n="season_label">Temporada</span>');
+                } else {
+                    seasonDiv.textContent = stat.text
+                }
               }
               
               itemWrap.appendChild(iconWrap)
