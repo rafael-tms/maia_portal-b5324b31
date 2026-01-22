@@ -10,6 +10,19 @@ function normalizeIconSrc(icon) {
   return `images/${trimmed}`;
 }
 
+// Detecta chave i18n baseado no ícone ou texto
+function getStatI18nKey(icon, text) {
+  const iconLower = (icon || '').toLowerCase();
+  const textLower = (text || '').toLowerCase();
+  
+  if (iconLower.includes('partida') || textLower.includes('partida')) return 'matches';
+  if (iconLower.includes('goal') || iconLower.includes('gol') || textLower.includes('gol')) return 'goals';
+  if (iconLower.includes('assist') || textLower.includes('assist')) return 'assists';
+  if (iconLower.includes('time') || iconLower.includes('calendar') || textLower.includes('temporada')) return 'season_label';
+  
+  return null;
+}
+
 function getCategoryI18nKey(catName) {
   if (!catName) return null;
   const lower = catName.toLowerCase().trim();
@@ -224,18 +237,13 @@ async function updateToday() {
               const seasonDiv = document.createElement('div')
               seasonDiv.className = 'season'
               
-              if (stat.icon && stat.icon.includes('partidas.png')) {
-                seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
-              } else if (stat.icon && stat.icon.includes('goal-1.png')) {
-                seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
-              } else if (stat.icon && stat.icon.includes('assitencia2.png')) {
-                seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
+              const i18nKey = getStatI18nKey(stat.icon, stat.text);
+              if (i18nKey) {
+                const number = (stat.text || '').match(/^\d+/)?.[0] || '';
+                const label = (stat.text || '').replace(/^\d+\s*/, '');
+                seasonDiv.innerHTML = `${number} <span data-i18n="${i18nKey}">${label}</span>`;
               } else {
-                if (stat.text && stat.text.includes('Temporada')) {
-                    seasonDiv.innerHTML = stat.text.replace('Temporada', '<span data-i18n="season_label">Temporada</span>');
-                } else {
-                    seasonDiv.textContent = stat.text
-                }
+                seasonDiv.textContent = stat.text;
               }
               
               itemWrap.appendChild(iconWrap)
