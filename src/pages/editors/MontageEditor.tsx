@@ -7,10 +7,16 @@ import _ from 'lodash'
 
 // Safe import handling for Vite/ESM/CJS interop
 const RGL = (RGLLib as any).default || RGLLib
-const WidthProvider = (RGLLib as any).WidthProvider || RGLLib.WidthProvider
 
 const ReactGridLayout = RGL
-const Layout = (RGLLib as any).Layout
+
+interface LayoutItem {
+  i: string
+  x: number
+  y: number
+  w: number
+  h: number
+}
 
 interface Montage {
   id: string
@@ -32,6 +38,7 @@ interface MontageItem {
   object_position_y?: number
   created_at: string
   i?: string // For RGL
+  is_active?: boolean
 }
 
 // Componente ImageField atualizado para múltiplos uploads
@@ -106,8 +113,6 @@ const MontageEditor: React.FC = () => {
   const [montages, setMontages] = useState<Montage[]>([])
   const [selectedMontage, setSelectedMontage] = useState<Montage | null>(null)
   const [items, setItems] = useState<MontageItem[]>([])
-  const [message, setMessage] = useState({ text: '', type: '' })
-  const [activeMontageId, setActiveMontageId] = useState<string | null>(null)
   
   // New Montage State
   const [isCreating, setIsCreating] = useState(false)
@@ -301,9 +306,7 @@ const MontageEditor: React.FC = () => {
       // Encontrar o ponto Y inicial (abaixo de tudo que já existe)
       let startY = items.reduce((max, item) => Math.max(max, item.y + item.h), 0)
       
-      const contents = Array.isArray(input) ? input : []
-      
-      const newItemsPayload = (Array.isArray(input) ? input : []).map((item, index) => {
+      const newItemsPayload = (Array.isArray(input) ? input : []).map((item) => {
         const content = typeof item === 'string' ? item : item.url
         
         let itemH = 6 // Default height
@@ -325,29 +328,6 @@ const MontageEditor: React.FC = () => {
         }
 
         // Calcular x e y baseados no índice relativo
-        const colIndex = index % (COLS / ITEM_W) // 0, 1, 2
-        const rowIndex = Math.floor(index / (COLS / ITEM_W))
-        
-        const x = colIndex * ITEM_W
-        // Note: This simple grid logic stacks them nicely if they have same height, 
-        // but with variable height it might overlap if we just use rowIndex * defaultHeight.
-        // Ideally we should use a packer, but since we disabled compaction, let's just place them sequentially vertically if they wrap.
-        // Actually, since we are calculating X,Y explicitly, we need to be careful.
-        // For simplicity in this "append" mode:
-        // We will just put them in the next available slot? 
-        // Or simpler: Just stack them vertically? No, user wants grid.
-        
-        // Simple approach: Track Y for each column
-        // But here we are processing a batch. 
-        // Let's keep the simple logic but use the max height of the row for the next row?
-        // Or just let the user arrange them?
-        // Let's stick to the grid placement but use the calculated H.
-        // Caveat: If items in the same row have different H, the next row calculation needs to account for the max Y of the previous row.
-        // BUT, our current logic `y = startY + (rowIndex * ITEM_H)` assumes constant height.
-        // We need to fix this loop to track Y.
-        
-        // However, `map` makes state tracking hard. Let's rewrite this map logic slightly or accept a minor imperfection that user fixes.
-        // Better:
         return {
            content,
            w: ITEM_W,
@@ -398,11 +378,11 @@ const MontageEditor: React.FC = () => {
     handleAddItems([content], type)
   }
 
-  const onLayoutChange = async (layout: Layout[]) => {
+  const onLayoutChange = async (layout: LayoutItem[]) => {
     // RGL returns layout items with i, x, y, w, h
     // We need to update our state and DB
     // Only update if changed
-    const updates = []
+    const updates: { id: string; x: number; y: number; w: number; h: number }[] = []
     const newItems = [...items]
 
     let hasChanges = false
@@ -634,8 +614,7 @@ const MontageEditor: React.FC = () => {
                     alignItems: 'center', 
                     justifyContent: 'center',
                     opacity: item.is_active === false ? 0.5 : 1,
-                    filter: item.is_active === false ? 'grayscale(100%)' : 'none',
-                    border: item.is_active === false ? '2px dashed #ff4d4d' : 'none'
+                    filter: item.is_active === false ? 'grayscale(100%)' : 'none'
                 }}>
                   <div className="drag-handle" style={{ 
                     position: 'absolute', top: 0, left: 0, right: 0, height: '20px', 
@@ -647,10 +626,7 @@ const MontageEditor: React.FC = () => {
                     <span
                         onClick={(e) => { 
                             e.stopPropagation(); 
-                            // e.preventDefault(); 
-                            // Need to be careful with drag/mousedown. RGL might capture it.
-                            // onMouseDown stopPropagation is safer for RGL usually.
-                            handleToggleItemActive(item.id, item.is_active !== false) 
+                            handleToggleGalleryVisibility(item.id, item.is_active !== false) 
                         }}
                         onMouseDown={(e) => e.stopPropagation()}
                         title={item.is_active !== false ? "Ocultar" : "Mostrar"}
