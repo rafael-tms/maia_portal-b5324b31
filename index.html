@@ -140,20 +140,21 @@
     /* === RESPONSIVIDADE DO RODAPÉ === */
     @media (max-width: 767px) {
       .site-footer {
-        padding-bottom: 80px !important;
+        padding-bottom: 60px !important;
       }
-      .site-footer .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+      
+      /* Admin link - esquerda */
+      .site-footer a[href="/admin.html"] {
+        position: absolute !important;
+        bottom: 20px !important;
+        left: 20px !important;
       }
+      
+      /* Khipo link - direita (mantém position absolute do inline style) */
       .site-footer .khipo-link {
-        position: relative !important;
-        bottom: auto !important;
-        right: auto !important;
-        justify-content: center !important;
-        margin-top: 20px;
-        display: flex !important;
+        position: absolute !important;
+        bottom: 20px !important;
+        right: 20px !important;
       }
     }
 
