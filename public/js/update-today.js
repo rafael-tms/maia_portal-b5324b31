@@ -253,8 +253,8 @@ async function updateToday() {
       })
       
       // Atualiza traduções após renderizar (importante para elementos data-i18n injetados)
-      if (updatePageTranslations) {
-        updatePageTranslations();
+      if (window.MaiaI18n && window.MaiaI18n.updatePageTranslations) {
+        window.MaiaI18n.updatePageTranslations();
       }
     } else {
       container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Nenhum card disponível.</div>'
