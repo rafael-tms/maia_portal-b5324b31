@@ -1,42 +1,399 @@
-#root {
-  max-width: 1280px;
+/* Variáveis CSS */
+:root {
+  --brand: #3cc674;
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: url('/images/Grama.png'), url('/images/Maia.png'), url('/images/bg-hero.png');
+  background-position: 50% 100%, 50% 100%, 50% 100%;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: contain, contain, cover;
+  border-top: 6px solid #3cc674;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 940px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 20px;
+}
+
+.div-block {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+}
+
+.hero-text {
   text-align: center;
 }
 
+.mais-posicao {
+  margin-top: 20px;
+  font-size: 24px;
+  color: var(--brand);
+  font-weight: bold;
+}
+
+/* Stats Section */
+.section {
+  padding: 80px 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.padding-m {
+  padding: 40px 0;
+}
+
+.col-left,
+.col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.data-wrap {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.big-number-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.number {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--brand);
+  margin: 0;
+}
+
+.number.big {
+  font-size: 48px;
+}
+
+.description {
+  font-size: 16px;
+  color: #ccc;
+  margin: 0;
+}
+
+.gols-wrap {
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.gols-wrap.bg {
+  background: var(--brand);
+}
+
+.gols-wrap.bg .number,
+.gols-wrap.bg .description {
+  color: #000;
+}
+
+.div-block-3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.line {
+  height: 2px;
+  background: var(--brand);
+  margin: 15px 0;
+  width: 100px;
+}
+
+.text-m {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+/* Utility class for 3-line clamp */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gradient-bg {
+  width: 100%;
+  max-width: 882px;
+  height: auto;
+  margin-top: 40px;
+}
+
+/* About Section */
+.about-title-wrap {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-title {
+  font-size: 36px;
+  color: var(--brand);
+  margin-bottom: 15px;
+}
+
+.about-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 40px;
+}
+
+.about-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.dados-item-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dados-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text {
+  font-size: 16px;
+  color: #ccc;
+}
+
+.text-g {
+  font-size: 16px;
+  color: var(--brand);
+  font-weight: bold;
+}
+
+.idiomas-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Removido para usar o estilo do Webflow */
+/* .language-selector-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+} */
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.flag {
+  border-radius: 2px;
+}
+
+.language-name {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Today Section */
+.padding-top {
+  padding-top: 40px;
+}
+
+.today-wrap {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.today-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.container-3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  width: 60px;
+  height: 60px;
+  background: var(--brand);
+  border-radius: 50%;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.content-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.today-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.title-style {
+  font-size: 24px;
+  color: var(--brand);
+  font-weight: bold;
+}
+
+.divider {
+  flex-shrink: 0;
+}
+
+.today-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.captura-de-tela-2024-04-08-as-0730-5 {
+  border-radius: 10px;
+}
+
+.flex-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.today-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.item-wrap {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.icon-wrap.small {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.season {
+  font-size: 16px;
+  color: #ccc;
+}
+
+/* Responsividade */
+@media screen and (max-width: 991px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .about-wrap {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .today-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .today-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .container {
+    padding: 0 15px;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media screen and (max-width: 767px) {
+  .hero-section {
+    min-height: 80vh;
+    background-size: cover, contain, cover;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  
+  .section {
+    padding: 60px 0;
+  }
+  
+  .data-wrap,
+  .gols-wrap {
+    padding: 15px;
+  }
+  
+  .number {
+    font-size: 28px;
+  }
+  
+  .number.big {
+    font-size: 36px;
+  }
+  
+  .about-card {
+    padding: 20px;
+  }
+  
+  .dados-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .today-wrap {
+    padding: 20px;
+  }
 }

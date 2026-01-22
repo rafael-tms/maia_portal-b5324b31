@@ -1,0 +1,1 @@
+ALTER TABLE about_info ADD COLUMN updated_at TIMESTAMPTZ DEFAULT now();
