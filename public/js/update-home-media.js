@@ -11,12 +11,15 @@ async function updateHomeMedia() {
     : 'pt';
 
   try {
+    console.log('[maia] update-home-media: buscando news com show_on_home=true...')
     // Busca TODAS as notícias marcadas para aparecer na home
     const { data, error } = await supabase
       .from('news')
       .select('*')
       .eq('show_on_home', true)
       .order('published_date', { ascending: false })
+
+    console.log('[maia] update-home-media: resposta', { count: data?.length, error, data })
 
     if (error) throw error
 

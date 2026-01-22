@@ -59,10 +59,13 @@ async function updateTrajectory() {
   if (!container) return
 
   try {
+    console.log('[maia] update-trajectory: buscando dados...')
     const { data, error } = await supabase
       .from('trajectory_cards')
       .select('*')
       .order('display_order', { ascending: true })
+
+    console.log('[maia] update-trajectory: resposta', { count: data?.length, error, data })
 
     if (error) throw error
 
