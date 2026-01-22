@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { componentTagger } from 'lovable-tagger'
+import tailwindcss from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 
 export default defineConfig(({ mode }) => ({
   plugins: [
@@ -15,6 +17,14 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss(),
+        autoprefixer(),
+      ],
     },
   },
   optimizeDeps: {
