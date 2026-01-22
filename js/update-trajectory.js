@@ -107,7 +107,7 @@ async function updateTrajectory() {
         titleWrap.appendChild(divider)
         
         const contentDiv = document.createElement('div')
-        contentDiv.className = 'today-content'
+        contentDiv.className = 'today-content trajectory-top-stats'
         
         // Se houver mais de uma categoria no topo, usa Grid com 2 colunas
         if (topCategories.length > 1) {
