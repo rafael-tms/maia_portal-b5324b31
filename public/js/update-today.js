@@ -285,12 +285,8 @@ async function updateToday() {
       })
       
       // Atualiza traduções após renderizar (importante para elementos data-i18n injetados)
-      // ATENÇÃO: updatePageTranslations dispara o evento "languageChanged"; como este arquivo
-      // também ouve esse evento para re-renderizar, usamos um guard para evitar loop.
-      if (window.MaiaI18n && window.MaiaI18n.updatePageTranslations) {
-        window.__maiaTodayApplyingTranslations = true;
-        window.MaiaI18n.updatePageTranslations();
-        window.__maiaTodayApplyingTranslations = false;
+      if (updatePageTranslations) {
+        updatePageTranslations();
       }
     } else {
       container.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Nenhum card disponível.</div>'
@@ -309,7 +305,6 @@ if (document.readyState === 'loading') {
 
 // Ouve mudanças de idioma para re-renderizar
 window.addEventListener('languageChanged', (e) => {
-    // Evita loop: updatePageTranslations() também dispara languageChanged.
-    if (window.__maiaTodayApplyingTranslations) return;
+    // Prevent infinite loop or excessive re-rendering if dispatchEvent bubbles
     updateToday();
 });
