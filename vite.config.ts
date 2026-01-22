@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
+  publicDir: 'public',
   server: {
     host: "::",
     port: 8080
@@ -34,8 +35,15 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        admin: resolve(__dirname, 'admin.html')
+        admin: resolve(__dirname, 'admin.html'),
+        galeria: resolve(__dirname, 'galeria.html'),
+        montagem: resolve(__dirname, 'montagem.html'),
+        noticias: resolve(__dirname, 'noticias.html'),
+        noticiaDetalhe: resolve(__dirname, 'noticia-detalhe.html'),
+        videos: resolve(__dirname, 'videos.html')
       }
-    }
+    },
+    assetsInclude: ['**/*.png', '**/*.jpg', '**/*.svg', '**/*.ico'],
+    copyPublicDir: true
   }
 }))
