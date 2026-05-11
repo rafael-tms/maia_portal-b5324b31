@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import { convertImageToWebp } from '../../utils/imageToWebp'
 import * as RGLLib from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
