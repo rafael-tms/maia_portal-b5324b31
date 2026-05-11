@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import { convertImageToWebp } from '../../utils/imageToWebp'
 
 const LANGUAGES = [
   { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/pt.png' },
@@ -37,13 +38,14 @@ const ImageField: React.FC<{
       if (!file) return
 
       setUploading(true)
-      const fileExt = file.name.split('.').pop()
+      const optimized = await convertImageToWebp(file)
+      const fileExt = optimized.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
       const filePath = `${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(filePath, file)
+        .upload(filePath, optimized, { contentType: optimized.type })
 
       if (uploadError) throw uploadError
 

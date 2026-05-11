@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import { convertImageToWebp } from '../../utils/imageToWebp'
 
 interface Video {
   id: string
@@ -138,17 +139,18 @@ const VideoEditor: React.FC = () => {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       // (Mantém a lógica de upload existente mas usando editingItem)
       try {
-        const file = e.target.files?.[0]
-        if (!file) return
+        const original = e.target.files?.[0]
+        if (!original) return
   
         setUploading(true)
+        const file = await convertImageToWebp(original)
         const fileExt = file.name.split('.').pop()
         const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
         const filePath = `thumbnails/${fileName}`
   
         const { error: uploadError } = await supabase.storage
           .from('images')
-          .upload(filePath, file)
+          .upload(filePath, file, { contentType: file.type })
   
         if (uploadError) throw uploadError
   
