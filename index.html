@@ -536,5 +536,26 @@
   <script type="module" src="js/update-home-videos.js?v=nocache3"></script>
   <script type="module" src="js/update-gallery-home.js?v=nocache3"></script>
   <script type="module" src="js/update-contact.js?v=nocache3"></script>
+  <script>
+    // Otimização global de imagens: adiciona decoding async e lazy-loading
+    // a qualquer <img> presente ou inserida dinamicamente (Supabase, etc.)
+    (function() {
+      function optimize(img) {
+        if (!img || img.dataset.optimized) return;
+        img.dataset.optimized = '1';
+        if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+        if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+      }
+      document.querySelectorAll('img').forEach(optimize);
+      const mo = new MutationObserver(muts => {
+        muts.forEach(m => m.addedNodes.forEach(n => {
+          if (n.nodeType !== 1) return;
+          if (n.tagName === 'IMG') optimize(n);
+          else if (n.querySelectorAll) n.querySelectorAll('img').forEach(optimize);
+        }));
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
 </body>
 </html>
