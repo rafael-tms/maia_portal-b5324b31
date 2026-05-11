@@ -55,7 +55,7 @@ const ImageUploader: React.FC<{
       setUploading(true)
 
       // Upload em paralelo
-      const uploadPromises = Array.from(files).map(async (file) => {
+      const uploadPromises = Array.from(files).map(async (originalFile) => {
         // Obter dimensões da imagem com timeout e error handling
         const dimensions = await new Promise<{ w: number; h: number }>((resolve) => {
           const img = new Image()
@@ -63,16 +63,17 @@ const ImageUploader: React.FC<{
           img.onerror = () => resolve({ w: 0, h: 0 }) // Fallback
           // Timeout de 5s
           setTimeout(() => resolve({ w: 0, h: 0 }), 5000)
-          img.src = URL.createObjectURL(file)
+          img.src = URL.createObjectURL(originalFile)
         })
 
+        const file = await convertImageToWebp(originalFile)
         const fileExt = file.name.split('.').pop()
         const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`
         const filePath = `montage/${fileName}`
 
         const { error: uploadError } = await supabase.storage
           .from('images')
-          .upload(filePath, file)
+          .upload(filePath, file, { contentType: file.type })
 
         if (uploadError) throw uploadError
 
