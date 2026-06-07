@@ -228,7 +228,7 @@ const MontageEditor: React.FC = () => {
   const handleDeleteMontage = async (id: string) => {
     if (!confirm('Tem certeza? Isso apagará a montagem e todos os itens.')) return
     try {
-      const { error } = await supabase.from('montages').delete().eq('id', id)
+      const { error } = await supabase.from('montages').update({ deleted_at: new Date().toISOString() }).eq('id', id)
       if (error) throw error
       setMontages(montages.filter(m => m.id !== id))
       if (selectedMontage?.id === id) setSelectedMontage(null)
