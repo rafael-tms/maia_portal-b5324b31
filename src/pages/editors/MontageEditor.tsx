@@ -443,7 +443,7 @@ const MontageEditor: React.FC = () => {
   const handleDeleteItem = async (id: string) => {
     if (!confirm('Remover item?')) return
     try {
-      const { error } = await supabase.from('montage_items').delete().eq('id', id)
+      const { error } = await supabase.from('montage_items').update({ deleted_at: new Date().toISOString() }).eq('id', id)
       if (error) throw error
       setItems(items.filter(i => i.id !== id))
     } catch (err: any) {
