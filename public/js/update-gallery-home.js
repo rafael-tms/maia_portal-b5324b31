@@ -32,10 +32,15 @@ async function updateGalleryHome() {
       return
     }
 
-    const activeMontage = montages[0]
+    const activeMontage = (montages || []).filter(__m => !__m.deleted_at)[0]
+    if (!activeMontage) {
+      container.style.display = 'none'
+      if (fallback) fallback.style.display = 'block'
+      return
+    }
 
     // 2. Fetch Items
-    const { data: items, error: iError } = await supabase
+    const { data: itemsRaw, error: iError } = await supabase
       .from('montage_items')
       .select('*')
       .eq('montage_id', activeMontage.id)
@@ -43,6 +48,7 @@ async function updateGalleryHome() {
       .order('created_at', { ascending: true })
 
     if (iError) throw iError
+    const items = (itemsRaw || []).filter(__i => !__i.deleted_at)
 
     if (items && items.length > 0) {
       // Show container, HIDE fallback

@@ -120,7 +120,7 @@ const NewsEditor: React.FC = () => {
         .order('published_date', { ascending: false })
 
       if (error) throw error
-      setItems(data || [])
+      setItems((data || []).filter((n: any) => !n.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar notícias:', err)
     } finally {
@@ -134,7 +134,7 @@ const NewsEditor: React.FC = () => {
     try {
       const { error } = await supabase
         .from('news')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id)
 
       if (error) throw error

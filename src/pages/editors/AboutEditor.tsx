@@ -37,7 +37,7 @@ const AboutEditor: React.FC = () => {
         .order('display_order', { ascending: true })
 
       if (error) throw error
-      setItems(data || [])
+      setItems((data || []).filter((it: any) => !it.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar dados:', err)
     } finally {
@@ -80,7 +80,7 @@ const AboutEditor: React.FC = () => {
     try {
       const { error } = await supabase
         .from('about_info')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id)
 
       if (error) throw error

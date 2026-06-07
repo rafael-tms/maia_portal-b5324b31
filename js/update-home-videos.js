@@ -82,7 +82,7 @@ async function updateHomeVideos() {
           }
       })
 
-      data.forEach(video => {
+      data.filter(__r => !__r.deleted_at).forEach(video => {
         const card = document.createElement('div')
         card.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'
         card.style.borderRadius = '10px'

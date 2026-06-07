@@ -127,7 +127,7 @@ const TrajectoryEditor: React.FC = () => {
 
       if (error) throw error
       
-      const parsedData = data?.map(card => {
+      const parsedData = data?.filter((card: any) => !card.deleted_at).map(card => {
         let stats: StatCategory[] = []
         try {
           stats = typeof card.stats_data === 'string' ? JSON.parse(card.stats_data) : card.stats_data
@@ -158,7 +158,7 @@ const TrajectoryEditor: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir este card?')) return
     try {
-      const { error } = await supabase.from('trajectory_cards').delete().eq('id', id)
+      const { error } = await supabase.from('trajectory_cards').update({ deleted_at: new Date().toISOString() }).eq('id', id)
       if (error) throw error
       setCards(cards.filter(c => c.id !== id))
       setMessage({ text: 'Card removido!', type: 'success' })

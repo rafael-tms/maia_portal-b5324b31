@@ -24,9 +24,13 @@ async function loadMontage() {
       .single()
     
     if (mError) throw mError
+    if (!montage || montage.deleted_at) {
+      if (titleEl) titleEl.textContent = 'Montagem indisponível'
+      return
+    }
     if (titleEl) titleEl.textContent = montage.title
 
-    const { data: items, error: iError } = await supabase
+    const { data: itemsRaw, error: iError } = await supabase
       .from('montage_items')
       .select('*')
       .eq('montage_id', montageId)
@@ -34,6 +38,7 @@ async function loadMontage() {
       .order('created_at', { ascending: true })
     
     if (iError) throw iError
+    const items = (itemsRaw || []).filter(__i => !__i.deleted_at)
 
     if (items && items.length > 0) {
       currentItems = items

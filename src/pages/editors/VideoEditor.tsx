@@ -32,7 +32,7 @@ const VideoEditor: React.FC = () => {
         .order('created_at', { ascending: false })
       
       if (error) throw error
-      setVideos(data || [])
+      setVideos((data || []).filter((v: any) => !v.deleted_at))
     } catch (error) {
       console.error('Error fetching videos:', error)
     } finally {
@@ -52,7 +52,7 @@ const VideoEditor: React.FC = () => {
     try {
       const { error } = await supabase
         .from('videos')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id)
       
       if (error) throw error

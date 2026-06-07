@@ -21,7 +21,7 @@ async function updateNews() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa loading
 
-      data.forEach(item => {
+      data.filter(__r => !__r.deleted_at).forEach(item => {
         let title = item.title;
         let summary = item.summary;
 

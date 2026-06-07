@@ -48,7 +48,7 @@ async function updateToday() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa loading
 
-      data.forEach(card => {
+      data.filter(__r => !__r.deleted_at).forEach(card => {
         // Parse translations if string
         let translations = card.translations;
         if (typeof translations === 'string') {

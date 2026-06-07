@@ -187,7 +187,7 @@ const MontageEditor: React.FC = () => {
     try {
       const { data, error } = await supabase.from('montages').select('*').order('created_at', { ascending: false })
       if (error) throw error
-      setMontages(data || [])
+      setMontages((data || []).filter((m: any) => !m.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar montagens:', err)
     } finally {
@@ -205,7 +205,7 @@ const MontageEditor: React.FC = () => {
         
       if (error) throw error
       // Mapeia para formato RGL se necessário, mas já estamos usando x,y,w,h
-      setItems(data || [])
+      setItems((data || []).filter((it: any) => !it.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar itens:', err)
     }
@@ -228,7 +228,7 @@ const MontageEditor: React.FC = () => {
   const handleDeleteMontage = async (id: string) => {
     if (!confirm('Tem certeza? Isso apagará a montagem e todos os itens.')) return
     try {
-      const { error } = await supabase.from('montages').delete().eq('id', id)
+      const { error } = await supabase.from('montages').update({ deleted_at: new Date().toISOString() }).eq('id', id)
       if (error) throw error
       setMontages(montages.filter(m => m.id !== id))
       if (selectedMontage?.id === id) setSelectedMontage(null)
@@ -443,7 +443,7 @@ const MontageEditor: React.FC = () => {
   const handleDeleteItem = async (id: string) => {
     if (!confirm('Remover item?')) return
     try {
-      const { error } = await supabase.from('montage_items').delete().eq('id', id)
+      const { error } = await supabase.from('montage_items').update({ deleted_at: new Date().toISOString() }).eq('id', id)
       if (error) throw error
       setItems(items.filter(i => i.id !== id))
     } catch (err: any) {

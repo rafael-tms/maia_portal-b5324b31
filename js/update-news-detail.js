@@ -26,7 +26,7 @@ async function loadNewsDetail() {
 
     if (error) throw error
 
-    if (data) {
+    if (data && !data.deleted_at) {
       let title = data.title;
       let content = data.content || data.summary || '';
 

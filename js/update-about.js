@@ -19,7 +19,7 @@ async function updateAbout() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa loading
 
-      data.forEach(item => {
+      data.filter(__r => !__r.deleted_at).forEach(item => {
         let label = item.label;
         let value = item.value;
 

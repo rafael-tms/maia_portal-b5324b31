@@ -58,7 +58,7 @@ async function updateVideosPage() {
     if (data && data.length > 0) {
       container.innerHTML = ''
       
-      data.forEach(video => {
+      data.filter(__r => !__r.deleted_at).forEach(video => {
         const videoCard = document.createElement('div')
         videoCard.className = 'video-card'
         
