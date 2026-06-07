@@ -185,7 +185,7 @@ const TodayEditor: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir este card?')) return
     try {
-      const { error } = await supabase.from('today_cards').delete().eq('id', id)
+      const { error } = await supabase.from('today_cards').update({ deleted_at: new Date().toISOString() }).eq('id', id)
       if (error) throw error
       setCards(cards.filter(c => c.id !== id))
       setMessage({ text: 'Card removido!', type: 'success' })
