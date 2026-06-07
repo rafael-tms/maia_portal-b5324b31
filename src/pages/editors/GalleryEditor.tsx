@@ -121,7 +121,7 @@ const GalleryEditor: React.FC = () => {
     try {
       const { error } = await supabase
         .from('gallery')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id)
 
       if (error) throw error
