@@ -68,12 +68,12 @@ async function updateStats(langOverride) {
         
         supabase
           .from('today_cards')
-          .select('stats_data')
+          .select('stats_data, deleted_at')
           .eq('type', 'stats'),
           
         supabase
           .from('trajectory_cards')
-          .select('stats_data')
+          .select('stats_data, deleted_at')
       ]);
 
       if (playerRes.error) console.error('Erro player_stats:', playerRes.error);
@@ -81,8 +81,8 @@ async function updateStats(langOverride) {
       if (trajectoryRes.error) console.error('Erro trajectory_cards:', trajectoryRes.error);
 
       const playerData = playerRes.data || {};
-      const todayData = todayRes.data || [];
-      const trajectoryData = trajectoryRes.data || [];
+      const todayData = (todayRes.data || []).filter(__r => !__r.deleted_at);
+      const trajectoryData = (trajectoryRes.data || []).filter(__r => !__r.deleted_at);
 
       // --- Cálculo Automático (Igual ao Editor) ---
       let totalGoals = 0;
