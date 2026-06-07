@@ -146,7 +146,7 @@ const TodayEditor: React.FC = () => {
       if (error) throw error
       
       // Parse stats_data e translations
-      const parsedData = data?.map(card => {
+      const parsedData = data?.filter((card: any) => !card.deleted_at).map(card => {
         let translations = {};
         try {
             translations = typeof card.translations === 'string' ? JSON.parse(card.translations) : (card.translations || {})
