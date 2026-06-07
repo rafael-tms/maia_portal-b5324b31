@@ -134,7 +134,7 @@ const NewsEditor: React.FC = () => {
     try {
       const { error } = await supabase
         .from('news')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id)
 
       if (error) throw error
