@@ -151,7 +151,6 @@ const MontageEditor: React.FC = () => {
         console.error(err)
     }
   }
-  }
 
   // Resize Observer to make grid responsive
   useEffect(() => {
