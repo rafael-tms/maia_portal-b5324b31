@@ -37,6 +37,7 @@ interface MontageItem {
   h: number
   object_position_x?: number
   object_position_y?: number
+  object_scale?: number
   created_at: string
   i?: string // For RGL
   is_active?: boolean
