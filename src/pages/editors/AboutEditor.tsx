@@ -80,7 +80,7 @@ const AboutEditor: React.FC = () => {
     try {
       const { error } = await supabase
         .from('about_info')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id)
 
       if (error) throw error
