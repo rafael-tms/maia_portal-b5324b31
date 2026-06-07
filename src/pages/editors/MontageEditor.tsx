@@ -187,7 +187,7 @@ const MontageEditor: React.FC = () => {
     try {
       const { data, error } = await supabase.from('montages').select('*').order('created_at', { ascending: false })
       if (error) throw error
-      setMontages(data || [])
+      setMontages((data || []).filter((m: any) => !m.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar montagens:', err)
     } finally {
