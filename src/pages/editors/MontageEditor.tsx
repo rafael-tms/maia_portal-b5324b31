@@ -742,6 +742,19 @@ const MontageEditor: React.FC = () => {
                                     style={{ flex: 1 }}
                                 />
                             </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px' }}>
+                                <span>🔍:</span>
+                                <input 
+                                    type="range" 
+                                    min="1" 
+                                    max="3" 
+                                    step="0.05"
+                                    value={item.object_scale ?? 1} 
+                                    onChange={(e) => handleUpdateScale(item.id, parseFloat(e.target.value))}
+                                    style={{ flex: 1 }}
+                                />
+                                <span style={{ minWidth: '28px', textAlign: 'right' }}>{(item.object_scale ?? 1).toFixed(1)}x</span>
+                            </div>
                         </div>
                     )}
                     </>
