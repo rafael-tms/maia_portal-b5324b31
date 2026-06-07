@@ -25,7 +25,7 @@ async function updateGallery() {
 
     // 3. For each montage, fetch the first image to use as cover
     const montagesWithCover = await Promise.all(
-      (montagesData || []).map(async (montage) => {
+      (montagesData || []).filter(__m => !__m.deleted_at).map(async (montage) => {
         const { data: items } = await supabase
           .from('montage_items')
           .select('content, type')
@@ -45,7 +45,7 @@ async function updateGallery() {
     // Note: User requested montages first.
     const allItems = [
       ...montagesWithCover,
-      ...(galleryData || []).map(i => ({ ...i, is_montage: false }))
+      ...(galleryData || []).filter(__g => !__g.deleted_at).map(i => ({ ...i, is_montage: false }))
     ]
 
     if (allItems.length > 0) {
