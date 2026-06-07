@@ -37,6 +37,7 @@ interface MontageItem {
   h: number
   object_position_x?: number
   object_position_y?: number
+  object_scale?: number
   created_at: string
   i?: string // For RGL
   is_active?: boolean
@@ -134,6 +135,20 @@ const MontageEditor: React.FC = () => {
         await supabase.from('montage_items').update({
             object_position_x: x,
             object_position_y: y
+        }).eq('id', id)
+    } catch (err) {
+        console.error(err)
+    }
+  }
+
+
+
+  const handleUpdateScale = async (id: string, scale: number) => {
+    // Update local state
+    setItems(items.map(i => i.id === id ? { ...i, object_scale: scale } : i))
+    try {
+        await supabase.from('montage_items').update({
+            object_scale: scale
         }).eq('id', id)
     } catch (err) {
         console.error(err)
@@ -672,6 +687,8 @@ const MontageEditor: React.FC = () => {
                           height: '100%', 
                           objectFit: 'cover', 
                           objectPosition: `${item.object_position_x ?? 50}% ${item.object_position_y ?? 50}%`,
+                          transform: `scale(${item.object_scale ?? 1})`,
+                          transformOrigin: `${item.object_position_x ?? 50}% ${item.object_position_y ?? 50}%`,
                           display: 'block' 
                       }} 
                       onError={(e) => {
@@ -726,6 +743,19 @@ const MontageEditor: React.FC = () => {
                                     onChange={(e) => handleUpdatePosition(item.id, item.object_position_x ?? 50, parseInt(e.target.value))}
                                     style={{ flex: 1 }}
                                 />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px' }}>
+                                <span>🔍:</span>
+                                <input 
+                                    type="range" 
+                                    min="1" 
+                                    max="3" 
+                                    step="0.05"
+                                    value={item.object_scale ?? 1} 
+                                    onChange={(e) => handleUpdateScale(item.id, parseFloat(e.target.value))}
+                                    style={{ flex: 1 }}
+                                />
+                                <span style={{ minWidth: '28px', textAlign: 'right' }}>{(item.object_scale ?? 1).toFixed(1)}x</span>
                             </div>
                         </div>
                     )}

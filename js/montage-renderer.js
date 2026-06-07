@@ -88,7 +88,10 @@ export function renderMontage(canvas, items) {
       img.style.objectFit = 'cover'
       const posX = item.object_position_x ?? 50
       const posY = item.object_position_y ?? 50
+      const scale = item.object_scale ?? 1
       img.style.objectPosition = `${posX}% ${posY}%`
+      img.style.transform = `scale(${scale})`
+      img.style.transformOrigin = `${posX}% ${posY}%`
       img.style.display = 'block'
       inner.appendChild(img)
     } else {
