@@ -138,7 +138,19 @@ const MontageEditor: React.FC = () => {
         }).eq('id', id)
     } catch (err) {
         console.error(err)
+  }
+
+  const handleUpdateScale = async (id: string, scale: number) => {
+    // Update local state
+    setItems(items.map(i => i.id === id ? { ...i, object_scale: scale } : i))
+    try {
+        await supabase.from('montage_items').update({
+            object_scale: scale
+        }).eq('id', id)
+    } catch (err) {
+        console.error(err)
     }
+  }
   }
 
   // Resize Observer to make grid responsive
