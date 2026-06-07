@@ -205,7 +205,7 @@ const MontageEditor: React.FC = () => {
         
       if (error) throw error
       // Mapeia para formato RGL se necessário, mas já estamos usando x,y,w,h
-      setItems(data || [])
+      setItems((data || []).filter((it: any) => !it.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar itens:', err)
     }
