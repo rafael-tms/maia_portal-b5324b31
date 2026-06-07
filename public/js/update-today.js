@@ -41,7 +41,7 @@ async function updateToday() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa loading
 
-      data.forEach(card => {
+      data.filter(__r => !__r.deleted_at).forEach(card => {
         // Parse translations if string
         let translations = card.translations;
         if (typeof translations === 'string') {
@@ -203,7 +203,7 @@ async function updateToday() {
           listDiv.className = 'today-list'
           
           if (card.stats_data && Array.isArray(card.stats_data)) {
-            card.stats_data.forEach(stat => {
+            card.stats_data.filter(__r => !__r.deleted_at).forEach(stat => {
               const itemWrap = document.createElement('div')
               itemWrap.className = 'item-wrap'
               

@@ -36,7 +36,7 @@ async function updateTrajectory() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa loading
 
-      data.forEach(card => {
+      data.filter(__r => !__r.deleted_at).forEach(card => {
         // Normaliza stats_data
         let statsData = card.stats_data
         if (typeof statsData === 'string') {

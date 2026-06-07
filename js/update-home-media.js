@@ -23,7 +23,7 @@ async function updateHomeMedia() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa container
 
-      data.forEach(item => {
+      data.filter(__r => !__r.deleted_at).forEach(item => {
         let title = item.title;
         let summary = item.summary;
 
