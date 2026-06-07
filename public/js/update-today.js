@@ -203,7 +203,7 @@ async function updateToday() {
           listDiv.className = 'today-list'
           
           if (card.stats_data && Array.isArray(card.stats_data)) {
-            card.stats_data.filter(__r => !__r.deleted_at).forEach(stat => {
+            card.stats_data.forEach(stat => {
               const itemWrap = document.createElement('div')
               itemWrap.className = 'item-wrap'
               
