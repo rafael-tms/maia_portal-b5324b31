@@ -138,7 +138,10 @@ const MontageEditor: React.FC = () => {
         }).eq('id', id)
     } catch (err) {
         console.error(err)
+    }
   }
+
+
 
   const handleUpdateScale = async (id: string, scale: number) => {
     // Update local state
