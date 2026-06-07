@@ -107,7 +107,7 @@ const GalleryEditor: React.FC = () => {
         .order('display_order', { ascending: true })
 
       if (error) throw error
-      setItems(data || [])
+      setItems((data || []).filter((it: any) => !it.deleted_at))
     } catch (err) {
       console.error('Erro ao buscar galeria:', err)
     } finally {
