@@ -127,7 +127,7 @@ const TrajectoryEditor: React.FC = () => {
 
       if (error) throw error
       
-      const parsedData = data?.map(card => {
+      const parsedData = data?.filter((card: any) => !card.deleted_at).map(card => {
         let stats: StatCategory[] = []
         try {
           stats = typeof card.stats_data === 'string' ? JSON.parse(card.stats_data) : card.stats_data
