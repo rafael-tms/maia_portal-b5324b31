@@ -130,7 +130,11 @@ const MontageEditor: React.FC = () => {
   const handleUpdateTextStyle = async (id: string, patch: { bg_color?: string; font_size?: number }) => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, ...patch } : i))
     try {
-      await supabase.from('montage_items').update(patch).eq('id', id)
+      const { error } = await supabase.from('montage_items').update(patch).eq('id', id)
+      if (error) {
+        console.error('Erro ao salvar estilo do texto:', error)
+        alert(`Não foi possível salvar o estilo: ${error.message}\n\nSe a mensagem indicar coluna inexistente, execute o SQL em migration-montage-text-style.sql no Supabase.`)
+      }
     } catch (err) {
       console.error(err)
     }
