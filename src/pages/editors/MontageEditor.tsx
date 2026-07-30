@@ -780,7 +780,7 @@ const MontageEditor: React.FC = () => {
                                 <span>🔍:</span>
                                 <input 
                                     type="range" 
-                                    min="1" 
+                                    min="0.3" 
                                     max="3" 
                                     step="0.05"
                                     value={item.object_scale ?? 1} 
