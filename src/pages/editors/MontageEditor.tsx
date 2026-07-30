@@ -717,7 +717,7 @@ const MontageEditor: React.FC = () => {
                       style={{ 
                           width: '100%', 
                           height: '100%', 
-                          objectFit: 'cover', 
+                          objectFit: (item.object_scale ?? 1) < 1 ? 'contain' : 'cover', 
                           objectPosition: `${item.object_position_x ?? 50}% ${item.object_position_y ?? 50}%`,
                           transform: `scale(${item.object_scale ?? 1})`,
                           transformOrigin: `${item.object_position_x ?? 50}% ${item.object_position_y ?? 50}%`,
