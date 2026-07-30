@@ -88,16 +88,17 @@ export function renderMontage(canvas, items) {
       img.style.objectFit = 'cover'
       const posX = item.object_position_x ?? 50
       const posY = item.object_position_y ?? 50
-      const scale = item.object_scale ?? 1
+      const imgScale = item.object_scale ?? 1
       img.style.objectPosition = `${posX}% ${posY}%`
-      img.style.transform = `scale(${scale})`
+      img.style.transform = `scale(${imgScale})`
       img.style.transformOrigin = `${posX}% ${posY}%`
       img.style.display = 'block'
       inner.appendChild(img)
     } else {
       // Update styling for text items based on user request (Dark Card Style)
-      inner.style.backgroundColor = '#0a1717'
-      inner.style.backgroundImage = 'radial-gradient(circle, #3cc67424, #0000)'
+      const bg = item.bg_color || '#0a1717'
+      inner.style.backgroundColor = bg
+      inner.style.backgroundImage = item.bg_color ? 'none' : 'radial-gradient(circle, #3cc67424, #0000)'
       inner.style.border = '1px solid #275757'
       
       const textDiv = document.createElement('div')
@@ -105,7 +106,9 @@ export function renderMontage(canvas, items) {
       // Text styling
       textDiv.style.color = '#FFFFFF'
       textDiv.style.fontWeight = 'bold'
-      textDiv.style.fontSize = '50px'
+      textDiv.style.fontSize = `${(item.font_size ?? 50) * scale}px`
+      textDiv.style.lineHeight = '1.1'
+      textDiv.style.padding = '4px'
       textDiv.style.textTransform = 'uppercase'
       textDiv.style.textAlign = 'center'
       textDiv.style.backgroundColor = 'transparent' // Override any CSS class
