@@ -38,6 +38,8 @@ interface MontageItem {
   object_position_x?: number
   object_position_y?: number
   object_scale?: number
+  bg_color?: string
+  font_size?: number
   created_at: string
   i?: string // For RGL
   is_active?: boolean
@@ -123,6 +125,16 @@ const MontageEditor: React.FC = () => {
   const [containerWidth, setContainerWidth] = useState(1000)
   
   const [editingPositionId, setEditingPositionId] = useState<string | null>(null)
+  const [editingTextStyleId, setEditingTextStyleId] = useState<string | null>(null)
+
+  const handleUpdateTextStyle = async (id: string, patch: { bg_color?: string; font_size?: number }) => {
+    setItems(prev => prev.map(i => i.id === id ? { ...i, ...patch } : i))
+    try {
+      await supabase.from('montage_items').update(patch).eq('id', id)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const handleUpdatePosition = async (id: string, x: number, y: number) => {
     // Update local state
