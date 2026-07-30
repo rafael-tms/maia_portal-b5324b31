@@ -383,9 +383,25 @@ const TrajectoryEditor: React.FC = () => {
           </div>
 
           <div style={{ display: 'grid', gap: '20px' }}>
-            {cards.map(card => (
+            {cards.map((card, index) => (
               <div key={card.id} style={{ backgroundColor: '#1a1a1a', padding: '20px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <button
+                      type="button"
+                      title="Mover para cima"
+                      disabled={index === 0}
+                      onClick={() => moveCard(index, -1)}
+                      style={{ padding: '2px 8px', backgroundColor: '#333', color: index === 0 ? '#555' : '#3cc674', border: 'none', borderRadius: '4px', cursor: index === 0 ? 'default' : 'pointer' }}
+                    >▲</button>
+                    <button
+                      type="button"
+                      title="Mover para baixo"
+                      disabled={index === cards.length - 1}
+                      onClick={() => moveCard(index, 1)}
+                      style={{ padding: '2px 8px', backgroundColor: '#333', color: index === cards.length - 1 ? '#555' : '#3cc674', border: 'none', borderRadius: '4px', cursor: index === cards.length - 1 ? 'default' : 'pointer' }}
+                    >▼</button>
+                  </div>
                   <div style={{ width: '60px', height: '60px', backgroundColor: '#000', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img src={card.left_image_url} alt="Logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                   </div>
