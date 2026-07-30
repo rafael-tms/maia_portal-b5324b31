@@ -38,6 +38,8 @@ interface MontageItem {
   object_position_x?: number
   object_position_y?: number
   object_scale?: number
+  bg_color?: string
+  font_size?: number
   created_at: string
   i?: string // For RGL
   is_active?: boolean
@@ -123,6 +125,16 @@ const MontageEditor: React.FC = () => {
   const [containerWidth, setContainerWidth] = useState(1000)
   
   const [editingPositionId, setEditingPositionId] = useState<string | null>(null)
+  const [editingTextStyleId, setEditingTextStyleId] = useState<string | null>(null)
+
+  const handleUpdateTextStyle = async (id: string, patch: { bg_color?: string; font_size?: number }) => {
+    setItems(prev => prev.map(i => i.id === id ? { ...i, ...patch } : i))
+    try {
+      await supabase.from('montage_items').update(patch).eq('id', id)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const handleUpdatePosition = async (id: string, x: number, y: number) => {
     // Update local state
@@ -621,8 +633,8 @@ const MontageEditor: React.FC = () => {
             >
               {items.map(item => (
                 <div key={item.id} style={{ 
-                    backgroundColor: item.type === 'text' ? '#0a1717' : 'transparent', 
-                    backgroundImage: item.type === 'text' ? 'radial-gradient(circle, #3cc67424, #0000)' : 'none',
+                    backgroundColor: item.type === 'text' ? (item.bg_color || '#0a1717') : 'transparent', 
+                    backgroundImage: item.type === 'text' && !item.bg_color ? 'radial-gradient(circle, #3cc67424, #0000)' : 'none',
                     border: item.type === 'text' ? '1px solid #275757' : (item.is_active === false ? '2px dashed #ff4d4d' : 'none'),
                     borderRadius: '5px', 
                     overflow: 'hidden', 
@@ -666,6 +678,22 @@ const MontageEditor: React.FC = () => {
                             📷
                         </span>
                     )}
+
+                    {/* Edit Text Style Toggle */}
+                    {item.type === 'text' && (
+                        <span
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingTextStyleId(editingTextStyleId === item.id ? null : item.id)
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            title="Estilo do Texto"
+                            style={{ color: editingTextStyleId === item.id ? '#3cc674' : '#fff', cursor: 'pointer', fontSize: '14px' }}
+                        >
+                            🎨
+                        </span>
+                    )}
+
 
                     <span 
                       onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id) }}
@@ -761,9 +789,50 @@ const MontageEditor: React.FC = () => {
                     )}
                     </>
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontWeight: 'bold', fontSize: '50px', textTransform: 'uppercase', textAlign: 'center' }}>
+                    <>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontWeight: 'bold', fontSize: `${item.font_size ?? 50}px`, textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1, padding: '4px', overflow: 'hidden' }}>
                       {item.content}
                     </div>
+
+                    {editingTextStyleId === item.id && (
+                        <div
+                            style={{
+                                position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px',
+                                background: 'rgba(0,0,0,0.85)', zIndex: 20,
+                                display: 'flex', flexDirection: 'column', gap: '5px'
+                            }}
+                            onMouseDown={e => e.stopPropagation()}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: '#fff' }}>
+                                <span>Fundo:</span>
+                                <input
+                                    type="color"
+                                    value={item.bg_color || '#0a1717'}
+                                    onChange={(e) => handleUpdateTextStyle(item.id, { bg_color: e.target.value })}
+                                    style={{ flex: 1, height: '24px', background: 'none', border: 'none', cursor: 'pointer' }}
+                                />
+                                <span
+                                    onClick={() => handleUpdateTextStyle(item.id, { bg_color: '' })}
+                                    title="Restaurar padrão"
+                                    style={{ cursor: 'pointer' }}
+                                >↺</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: '#fff' }}>
+                                <span>Tamanho:</span>
+                                <input
+                                    type="range"
+                                    min="10"
+                                    max="150"
+                                    step="1"
+                                    value={item.font_size ?? 50}
+                                    onChange={(e) => handleUpdateTextStyle(item.id, { font_size: parseInt(e.target.value) })}
+                                    style={{ flex: 1 }}
+                                />
+                                <span style={{ minWidth: '34px', textAlign: 'right' }}>{item.font_size ?? 50}px</span>
+                            </div>
+                        </div>
+                    )}
+                    </>
                   )}
                 </div>
               ))}
