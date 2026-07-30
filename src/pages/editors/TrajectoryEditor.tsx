@@ -167,29 +167,60 @@ const TrajectoryEditor: React.FC = () => {
     }
   }
 
+  // Persiste a ordem atual da lista (display_order = posição)
+  const persistOrder = async (list: TrajectoryCard[]) => {
+    try {
+      await Promise.all(
+        list.map((card, index) =>
+          supabase.from('trajectory_cards').update({ display_order: index + 1 }).eq('id', card.id)
+        )
+      )
+    } catch (err: any) {
+      setMessage({ text: `Erro ao salvar ordem: ${err.message}`, type: 'error' })
+    }
+  }
+
+  const moveCard = async (index: number, direction: -1 | 1) => {
+    const target = index + direction
+    if (target < 0 || target >= cards.length) return
+    const newCards = [...cards]
+    const tmp = newCards[index]
+    newCards[index] = newCards[target]
+    newCards[target] = tmp
+    const reordered = newCards.map((c, i) => ({ ...c, display_order: i + 1 }))
+    setCards(reordered)
+    await persistOrder(reordered)
+    setMessage({ text: 'Ordem atualizada!', type: 'success' })
+  }
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingCard) return
 
     try {
-      const cardData = {
-        title: editingCard.title,
-        left_image_url: editingCard.left_image_url,
-        stats_data: editingCard.stats_data,
-        display_order: editingCard.display_order || (cards.length + 1)
-      }
-
       let error
       if (isEditing && editingCard.id) {
         const { error: updateError } = await supabase
           .from('trajectory_cards')
-          .update(cardData)
+          .update({
+            title: editingCard.title,
+            left_image_url: editingCard.left_image_url,
+            stats_data: editingCard.stats_data,
+            display_order: editingCard.display_order
+          })
           .eq('id', editingCard.id)
         error = updateError
       } else {
+        // Novo card entra no topo da lista
+        const minOrder = cards.length > 0 ? Math.min(...cards.map(c => c.display_order ?? 0)) : 1
         const { error: insertError } = await supabase
           .from('trajectory_cards')
-          .insert([cardData])
+          .insert([{
+            title: editingCard.title,
+            left_image_url: editingCard.left_image_url,
+            stats_data: editingCard.stats_data,
+            display_order: minOrder - 1
+          }])
         error = insertError
       }
 
@@ -198,7 +229,7 @@ const TrajectoryEditor: React.FC = () => {
       setMessage({ text: 'Card salvo com sucesso!', type: 'success' })
       setEditingCard(null)
       setIsEditing(false)
-      fetchCards()
+      await fetchCards()
     } catch (err: any) {
       setMessage({ text: `Erro ao salvar: ${err.message}`, type: 'error' })
     }
