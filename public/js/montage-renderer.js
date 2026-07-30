@@ -85,10 +85,11 @@ export function renderMontage(canvas, items) {
       img.loading = 'lazy'
       img.style.width = '100%'
       img.style.height = '100%'
-      img.style.objectFit = 'cover'
       const posX = item.object_position_x ?? 50
       const posY = item.object_position_y ?? 50
       const imgScale = item.object_scale ?? 1
+      // Zoom out (<1) shows the whole image instead of cropping it
+      img.style.objectFit = imgScale < 1 ? 'contain' : 'cover'
       img.style.objectPosition = `${posX}% ${posY}%`
       img.style.transform = `scale(${imgScale})`
       img.style.transformOrigin = `${posX}% ${posY}%`
