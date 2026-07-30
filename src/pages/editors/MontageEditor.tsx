@@ -789,9 +789,50 @@ const MontageEditor: React.FC = () => {
                     )}
                     </>
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontWeight: 'bold', fontSize: '50px', textTransform: 'uppercase', textAlign: 'center' }}>
+                    <>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontWeight: 'bold', fontSize: `${item.font_size ?? 50}px`, textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1, padding: '4px', overflow: 'hidden' }}>
                       {item.content}
                     </div>
+
+                    {editingTextStyleId === item.id && (
+                        <div
+                            style={{
+                                position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px',
+                                background: 'rgba(0,0,0,0.85)', zIndex: 20,
+                                display: 'flex', flexDirection: 'column', gap: '5px'
+                            }}
+                            onMouseDown={e => e.stopPropagation()}
+                        >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: '#fff' }}>
+                                <span>Fundo:</span>
+                                <input
+                                    type="color"
+                                    value={item.bg_color || '#0a1717'}
+                                    onChange={(e) => handleUpdateTextStyle(item.id, { bg_color: e.target.value })}
+                                    style={{ flex: 1, height: '24px', background: 'none', border: 'none', cursor: 'pointer' }}
+                                />
+                                <span
+                                    onClick={() => handleUpdateTextStyle(item.id, { bg_color: '' })}
+                                    title="Restaurar padrão"
+                                    style={{ cursor: 'pointer' }}
+                                >↺</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', color: '#fff' }}>
+                                <span>Tamanho:</span>
+                                <input
+                                    type="range"
+                                    min="10"
+                                    max="150"
+                                    step="1"
+                                    value={item.font_size ?? 50}
+                                    onChange={(e) => handleUpdateTextStyle(item.id, { font_size: parseInt(e.target.value) })}
+                                    style={{ flex: 1 }}
+                                />
+                                <span style={{ minWidth: '34px', textAlign: 'right' }}>{item.font_size ?? 50}px</span>
+                            </div>
+                        </div>
+                    )}
+                    </>
                   )}
                 </div>
               ))}
