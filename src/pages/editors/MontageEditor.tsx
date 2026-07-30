@@ -633,8 +633,8 @@ const MontageEditor: React.FC = () => {
             >
               {items.map(item => (
                 <div key={item.id} style={{ 
-                    backgroundColor: item.type === 'text' ? '#0a1717' : 'transparent', 
-                    backgroundImage: item.type === 'text' ? 'radial-gradient(circle, #3cc67424, #0000)' : 'none',
+                    backgroundColor: item.type === 'text' ? (item.bg_color || '#0a1717') : 'transparent', 
+                    backgroundImage: item.type === 'text' && !item.bg_color ? 'radial-gradient(circle, #3cc67424, #0000)' : 'none',
                     border: item.type === 'text' ? '1px solid #275757' : (item.is_active === false ? '2px dashed #ff4d4d' : 'none'),
                     borderRadius: '5px', 
                     overflow: 'hidden', 
@@ -678,6 +678,22 @@ const MontageEditor: React.FC = () => {
                             📷
                         </span>
                     )}
+
+                    {/* Edit Text Style Toggle */}
+                    {item.type === 'text' && (
+                        <span
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingTextStyleId(editingTextStyleId === item.id ? null : item.id)
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            title="Estilo do Texto"
+                            style={{ color: editingTextStyleId === item.id ? '#3cc674' : '#fff', cursor: 'pointer', fontSize: '14px' }}
+                        >
+                            🎨
+                        </span>
+                    )}
+
 
                     <span 
                       onClick={(e) => { e.stopPropagation(); handleDeleteItem(item.id) }}
