@@ -23,7 +23,7 @@ async function updateHomeMedia() {
     if (data && data.length > 0) {
       container.innerHTML = '' // Limpa container
 
-      data.filter(__r => !__r.deleted_at).forEach(item => {
+      data.filter(__r => !__r.deleted_at).forEach((item, __idx) => {
         let title = item.title;
         let summary = item.summary;
 
@@ -58,7 +58,15 @@ async function updateHomeMedia() {
         const mainImg = document.createElement('img')
         mainImg.src = item.image_url || 'images/soccer-ball-1.webp' // Fallback
         mainImg.alt = item.title
-        mainImg.loading = 'lazy'
+        // Primeira imagem carrega imediatamente (prioridade alta), demais em lazy
+        if (__idx === 0) {
+          mainImg.loading = 'eager'
+          mainImg.setAttribute('fetchpriority', 'high')
+        } else {
+          mainImg.loading = 'lazy'
+          mainImg.setAttribute('fetchpriority', 'low')
+        }
+        mainImg.decoding = 'async'
         // Ajustes para parecer uma foto de destaque e não um logo pequeno
         mainImg.style.width = '100%'
         mainImg.style.height = '100%'
