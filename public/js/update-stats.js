@@ -2,7 +2,7 @@ import { supabase } from './supabase-client.js'
 
 // Cache local em memória
 let cachedStats = null;
-const STORAGE_KEY = 'maia_player_stats_v1';
+const STORAGE_KEY = 'maia_player_stats_v2';
 
 // Helper para mostrar erro na UI
 function showError(message) {
@@ -62,7 +62,7 @@ async function updateStats(langOverride) {
       const [playerRes, todayRes, trajectoryRes] = await Promise.all([
         supabase
           .from('player_stats')
-          .select('characteristics, translations')
+          .select('goals, goals_per_game, assists, matches, characteristics, translations')
           .limit(1)
           .maybeSingle(),
         
@@ -94,9 +94,10 @@ async function updateStats(langOverride) {
           // Extrai número da string (ex: "10 gols" -> 10)
           const val = parseInt(item.text.replace(/\D/g, '')) || 0;
           
-          if (item.icon && item.icon.includes('goal-1.webp')) totalGoals += val;
-          if (item.icon && item.icon.includes('partidas.webp')) totalMatches += val;
-          if (item.icon && item.icon.includes('assitencia2.webp')) totalAssists += val;
+          const icon = String(item.icon || '').toLowerCase().replace(/\.(png|jpe?g)(\?.*)?$/, '.webp');
+          if (icon.includes('goal-1.webp')) totalGoals += val;
+          if (icon.includes('partidas.webp')) totalMatches += val;
+          if (icon.includes('assitencia2.webp')) totalAssists += val;
       };
 
       const safeParseJSON = (d) => {
@@ -126,13 +127,20 @@ async function updateStats(langOverride) {
           }
       });
 
-      const goalsPerGame = totalMatches > 0 ? (totalGoals / totalMatches).toFixed(2).replace('.', ',') : '0,00';
+      // Os totais persistidos são a fonte segura quando os cards não existem,
+      // estão incompletos ou ainda usam uma estrutura legada.
+      const resolvedGoals = totalGoals || Number.parseInt(playerData.goals, 10) || 0;
+      const resolvedMatches = totalMatches || Number.parseInt(playerData.matches, 10) || 0;
+      const resolvedAssists = totalAssists || Number.parseInt(playerData.assists, 10) || 0;
+      const goalsPerGame = resolvedMatches > 0
+        ? (resolvedGoals / resolvedMatches).toFixed(2).replace('.', ',')
+        : (playerData.goals_per_game || '0,00');
       
       // Monta objeto final combinando dados calculados + characteristics do banco
       const finalData = {
-          goals: totalGoals.toString(),
-          matches: totalMatches.toString(),
-          assists: totalAssists.toString(),
+          goals: resolvedGoals.toString(),
+          matches: resolvedMatches.toString(),
+          assists: resolvedAssists.toString(),
           goals_per_game: goalsPerGame,
           characteristics: playerData.characteristics,
           translations: playerData.translations
