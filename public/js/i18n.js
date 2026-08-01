@@ -25,7 +25,7 @@ export function getCurrentLanguage() {
   return currentLanguage;
 }
 
-export function updatePageTranslations() {
+export function updatePageTranslations(notify = false) {
   const langData = translations[currentLanguage];
   if (!langData) return;
 
@@ -68,15 +68,18 @@ export function updatePageTranslations() {
     }
   });
 
-  // Dispatch event for other scripts
-  window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: currentLanguage } }));
+  // Dispatch event for other scripts (apenas quando o idioma realmente muda,
+  // evitando loop infinito com os renderizadores que chamam updatePageTranslations)
+  if (notify) {
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: currentLanguage } }));
+  }
 }
 
 export function setLanguage(lang) {
   if (!VALID_LANGUAGES.includes(lang)) return;
   currentLanguage = lang;
   localStorage.setItem('maia-site-lang', lang);
-  updatePageTranslations();
+  updatePageTranslations(true);
 }
 
 function initLanguageSelector() {
