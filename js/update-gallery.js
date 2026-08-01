@@ -62,7 +62,13 @@ async function updateGallery() {
         
         if (item.is_montage) {
           // If montage has no images, show a placeholder or skip
-          img.src = item.cover_url || 'images/placeholder-montage.jpg' // You might need a placeholder
+          if (item.cover_url) {
+            img.src = item.cover_url
+          } else {
+            img.style.display = 'none'
+            card.style.background = 'linear-gradient(135deg,#0a1717,#143030)'
+            card.style.minHeight = '300px'
+          }
           img.alt = `Montagem: ${item.title}`
           
           // Add a "Montage" badge/indicator
