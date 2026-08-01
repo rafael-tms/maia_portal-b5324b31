@@ -4,8 +4,9 @@ import { supabase } from './supabase-client.js'
 function normalizeAssetPath(path) {
   if (!path) return 'images/soccer-ball-1.webp';
   if (path.startsWith('http') || path.startsWith('/')) return path;
-  if (!path.startsWith('images/')) return 'images/' + path;
-  return path;
+  if (!path.startsWith('images/')) path = 'images/' + path;
+  // Assets locais foram convertidos para WebP: ajusta extensões antigas
+  return path.replace(/\.(png|jpg|jpeg)$/i, '.webp');
 }
 
 function getCategoryI18nKey(catName) {
