@@ -24,11 +24,11 @@ interface TrajectoryCard {
 
 // Ícones disponíveis
 const availableIcons = [
-  { label: 'Calendário/Temp.', value: 'images/calendar-1.png', preview: '📅' },
-  { label: 'Partidas', value: 'images/partidas.png', preview: '👕' },
-  { label: 'Gols', value: 'images/goal-1.png', preview: '⚽' },
-  { label: 'Assistências', value: 'images/assitencia2.png', preview: '👟' },
-  { label: 'Bola', value: 'images/soccer-ball-1.png', preview: '⚽' }
+  { label: 'Calendário/Temp.', value: 'images/calendar-1.webp', preview: '📅' },
+  { label: 'Partidas', value: 'images/partidas.webp', preview: '👕' },
+  { label: 'Gols', value: 'images/goal-1.webp', preview: '⚽' },
+  { label: 'Assistências', value: 'images/assitencia2.webp', preview: '👟' },
+  { label: 'Bola', value: 'images/soccer-ball-1.webp', preview: '⚽' }
 ]
 
 const categoryOptions = ['Sub 13', 'Sub 15', 'Sub 17', 'Sub 20', 'Sub 23', 'Principal']
@@ -244,7 +244,7 @@ const TrajectoryEditor: React.FC = () => {
           id: Math.random().toString(36).substr(2, 9), 
           name: '', 
           section: 'top',
-          items: [{ text: '', icon: 'images/soccer-ball-1.png' }] 
+          items: [{ text: '', icon: 'images/soccer-ball-1.webp' }] 
         }
       ]
     })
@@ -259,7 +259,7 @@ const TrajectoryEditor: React.FC = () => {
       id: Math.random().toString(36).substr(2, 9),
       name: '',
       section,
-      items: [{ text: '', icon: 'images/soccer-ball-1.png' }]
+      items: [{ text: '', icon: 'images/soccer-ball-1.webp' }]
     }
     setEditingCard({ ...editingCard, stats_data: [...(editingCard.stats_data || []), newCat] })
   }
@@ -279,7 +279,7 @@ const TrajectoryEditor: React.FC = () => {
   const addItemToCategory = (catId: string) => {
     if (!editingCard || !editingCard.stats_data) return
     const newData = editingCard.stats_data.map(c => 
-      c.id === catId ? { ...c, items: [...c.items, { text: '', icon: 'images/soccer-ball-1.png' }] } : c
+      c.id === catId ? { ...c, items: [...c.items, { text: '', icon: 'images/soccer-ball-1.webp' }] } : c
     )
     setEditingCard({ ...editingCard, stats_data: newData })
   }
@@ -331,7 +331,7 @@ const TrajectoryEditor: React.FC = () => {
         return (
           <div key={itemIndex} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
             <select
-              value={item.icon || 'images/soccer-ball-1.png'}
+              value={item.icon || 'images/soccer-ball-1.webp'}
               onChange={e => updateItem(cat.id, itemIndex, 'icon', e.target.value)}
               style={{ padding: '8px', backgroundColor: '#333', border: '1px solid #444', color: '#fff', borderRadius: '4px', width: '140px' }}
             >

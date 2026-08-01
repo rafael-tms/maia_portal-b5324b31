@@ -82,9 +82,9 @@ const StatsEditor: React.FC = () => {
           if (!item || !item.text) return;
           const val = parseInt(item.text.replace(/\D/g, '')) || 0;
           
-          if (item.icon?.includes('goal-1.png')) totalGoals += val;
-          if (item.icon?.includes('partidas.png')) totalMatches += val;
-          if (item.icon?.includes('assitencia2.png')) totalAssists += val;
+          if (item.icon?.includes('goal-1.webp')) totalGoals += val;
+          if (item.icon?.includes('partidas.webp')) totalMatches += val;
+          if (item.icon?.includes('assitencia2.webp')) totalAssists += val;
       }
 
       const safeParseJSON = (data: any) => {

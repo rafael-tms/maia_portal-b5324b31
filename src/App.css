@@ -5,7 +5,7 @@
 
 /* Hero Section */
 .hero-section {
-  background-image: url('/images/Grama.png'), url('/images/Maia.png'), url('/images/bg-hero.png');
+  background-image: url('/images/Grama.webp'), url('/images/Maia.webp'), url('/images/bg-hero.webp');
   background-position: 50% 100%, 50% 100%, 50% 100%;
   background-repeat: no-repeat, no-repeat, no-repeat;
   background-size: contain, contain, cover;

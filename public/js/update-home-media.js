@@ -56,7 +56,7 @@ async function updateHomeMedia() {
         
         // Usando a imagem da notícia como imagem principal (logo/destaque)
         const mainImg = document.createElement('img')
-        mainImg.src = item.image_url || 'images/soccer-ball-1.png' // Fallback
+        mainImg.src = item.image_url || 'images/soccer-ball-1.webp' // Fallback
         mainImg.alt = item.title
         mainImg.loading = 'lazy'
         // Ajustes para parecer uma foto de destaque e não um logo pequeno

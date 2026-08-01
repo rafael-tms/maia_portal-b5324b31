@@ -30,11 +30,11 @@ interface TodayCard {
 
 // Ícones disponíveis para seleção
 const availableIcons = [
-  { label: 'Calendário/Temp.', value: 'images/calendar-1.png', preview: '📅' },
-  { label: 'Partidas', value: 'images/partidas.png', preview: '👕' },
-  { label: 'Gols', value: 'images/goal-1.png', preview: '⚽' },
-  { label: 'Assistências', value: 'images/assitencia2.png', preview: '👟' },
-  { label: 'Bola', value: 'images/soccer-ball-1.png', preview: '⚽' }
+  { label: 'Calendário/Temp.', value: 'images/calendar-1.webp', preview: '📅' },
+  { label: 'Partidas', value: 'images/partidas.webp', preview: '👕' },
+  { label: 'Gols', value: 'images/goal-1.webp', preview: '⚽' },
+  { label: 'Assistências', value: 'images/assitencia2.webp', preview: '👟' },
+  { label: 'Bola', value: 'images/soccer-ball-1.webp', preview: '⚽' }
 ]
 
 const categories = ['', 'Sub 13', 'Sub 15', 'Sub 17', 'Sub 20', 'Sub 23', 'Principal']
@@ -267,7 +267,7 @@ const TodayEditor: React.FC = () => {
       news_text: '',
       news_link: '#',
       category: '',
-      stats_data: type === 'stats' ? [{ text: '', icon: 'images/soccer-ball-1.png' }] : undefined,
+      stats_data: type === 'stats' ? [{ text: '', icon: 'images/soccer-ball-1.webp' }] : undefined,
       translations: {}
     })
     setIsEditing(false)
@@ -284,7 +284,7 @@ const TodayEditor: React.FC = () => {
   const addStatField = () => {
     if (!editingCard) return
     const currentStats = editingCard.stats_data || []
-    setEditingCard({ ...editingCard, stats_data: [...currentStats, { text: '', icon: 'images/soccer-ball-1.png' }] })
+    setEditingCard({ ...editingCard, stats_data: [...currentStats, { text: '', icon: 'images/soccer-ball-1.webp' }] })
   }
 
   const removeStatField = (index: number) => {
@@ -518,7 +518,7 @@ const TodayEditor: React.FC = () => {
                   return (
                     <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
                       <select
-                        value={stat.icon || 'images/soccer-ball-1.png'}
+                        value={stat.icon || 'images/soccer-ball-1.webp'}
                         onChange={e => handleStatChange(index, 'icon', e.target.value)}
                         style={{ padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px', width: '150px' }}
                       >
