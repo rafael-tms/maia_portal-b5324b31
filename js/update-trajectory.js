@@ -2,7 +2,7 @@ import { supabase } from './supabase-client.js'
 
 // Normaliza caminhos de assets para garantir prefixo correto
 function normalizeAssetPath(path) {
-  if (!path) return 'images/soccer-ball-1.png';
+  if (!path) return 'images/soccer-ball-1.webp';
   if (path.startsWith('http') || path.startsWith('/')) return path;
   if (!path.startsWith('images/')) return 'images/' + path;
   return path;
@@ -157,11 +157,11 @@ async function updateTrajectory() {
                     seasonDiv.className = 'season'
                     
                     const icon = normalizeAssetPath(stat.icon)
-                    if (icon.includes('partidas.png')) {
+                    if (icon.includes('partidas.webp')) {
                         seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
-                    } else if (icon.includes('goal-1.png')) {
+                    } else if (icon.includes('goal-1.webp')) {
                         seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
-                    } else if (icon.includes('assitencia2.png')) {
+                    } else if (icon.includes('assitencia2.webp')) {
                         seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
                     } else {
                         seasonDiv.textContent = stat.text
@@ -234,11 +234,11 @@ async function updateTrajectory() {
                         seasonDiv.className = 'season'
                         
                         const icon = normalizeAssetPath(stat.icon)
-                        if (icon.includes('partidas.png')) {
+                        if (icon.includes('partidas.webp')) {
                             seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
-                        } else if (icon.includes('goal-1.png')) {
+                        } else if (icon.includes('goal-1.webp')) {
                             seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
-                        } else if (icon.includes('assitencia2.png')) {
+                        } else if (icon.includes('assitencia2.webp')) {
                             seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
                         } else {
                             seasonDiv.textContent = stat.text

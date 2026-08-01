@@ -42,7 +42,7 @@ body {
 }
 
 .hero-section {
-  background-image: url('../images/Grama.png'), url('../images/Maia.png'), url('../images/bg-hero.png');
+  background-image: url('../images/Grama.webp'), url('../images/Maia.webp'), url('../images/bg-hero.webp');
   background-position: 50% 100%, 50% 100%, 50% 100%;
   background-repeat: no-repeat, no-repeat, no-repeat;
   background-size: contain, contain, cover;
@@ -214,7 +214,7 @@ body {
 .about-card {
   grid-row-gap: 10px;
   background-color: #0a1717;
-  background-image: linear-gradient(#0a171799, #0a171799), url('../images/img-bg.png');
+  background-image: linear-gradient(#0a171799, #0a171799), url('../images/img-bg.webp');
   background-position: 0 0, 100% 0;
   background-repeat: repeat, no-repeat;
   background-size: auto, contain;
@@ -407,7 +407,7 @@ body {
 
 .logo {
   background-color: #fff;
-  background-image: url('../images/Logo.jpg');
+  background-image: url('../images/Logo.webp');
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: contain;
@@ -700,7 +700,7 @@ body {
   }
 
   .about-card {
-    background-image: linear-gradient(#0a1717cc, #0a1717cc), url('../images/img-bg.png');
+    background-image: linear-gradient(#0a1717cc, #0a1717cc), url('../images/img-bg.webp');
     background-position: 0 0, 100% 0;
     background-repeat: repeat, no-repeat;
     background-size: auto, contain;

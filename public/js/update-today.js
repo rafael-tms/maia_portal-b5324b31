@@ -2,7 +2,7 @@ import { supabase } from './supabase-client.js'
 
 // Normaliza caminhos de assets para garantir prefixo correto
 function normalizeAssetPath(path) {
-  if (!path) return 'images/soccer-ball-1.png';
+  if (!path) return 'images/soccer-ball-1.webp';
   if (path.startsWith('http') || path.startsWith('/')) return path;
   if (!path.startsWith('images/')) return 'images/' + path;
   return path;
@@ -220,11 +220,11 @@ async function updateToday() {
               const seasonDiv = document.createElement('div')
               seasonDiv.className = 'season'
               
-              if (stat.icon && stat.icon.includes('partidas.png')) {
+              if (stat.icon && stat.icon.includes('partidas.webp')) {
                 seasonDiv.innerHTML = `${stat.text} <span data-i18n="matches">Partidas</span>`
-              } else if (stat.icon && stat.icon.includes('goal-1.png')) {
+              } else if (stat.icon && stat.icon.includes('goal-1.webp')) {
                 seasonDiv.innerHTML = `${stat.text} <span data-i18n="goals">Gols</span>`
-              } else if (stat.icon && stat.icon.includes('assitencia2.png')) {
+              } else if (stat.icon && stat.icon.includes('assitencia2.webp')) {
                 seasonDiv.innerHTML = `${stat.text} <span data-i18n="assists">Assistências</span>`
               } else {
                 if (stat.text && stat.text.includes('Temporada')) {

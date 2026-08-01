@@ -94,9 +94,9 @@ async function updateStats(langOverride) {
           // Extrai número da string (ex: "10 gols" -> 10)
           const val = parseInt(item.text.replace(/\D/g, '')) || 0;
           
-          if (item.icon && item.icon.includes('goal-1.png')) totalGoals += val;
-          if (item.icon && item.icon.includes('partidas.png')) totalMatches += val;
-          if (item.icon && item.icon.includes('assitencia2.png')) totalAssists += val;
+          if (item.icon && item.icon.includes('goal-1.webp')) totalGoals += val;
+          if (item.icon && item.icon.includes('partidas.webp')) totalMatches += val;
+          if (item.icon && item.icon.includes('assitencia2.webp')) totalAssists += val;
       };
 
       const safeParseJSON = (d) => {
