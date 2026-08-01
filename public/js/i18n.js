@@ -77,6 +77,7 @@ export function updatePageTranslations(notify = false) {
 
 export function setLanguage(lang) {
   if (!VALID_LANGUAGES.includes(lang)) return;
+  if (lang === currentLanguage) return;
   currentLanguage = lang;
   localStorage.setItem('maia-site-lang', lang);
   updatePageTranslations(true);
