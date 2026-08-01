@@ -1,6 +1,7 @@
 // Converts an image File to WebP in the browser using a Canvas.
 // - Skips GIFs (animation would be lost) and SVGs (vector).
 // - Skips files that are already WebP.
+// - All other formats (JPEG/PNG/etc.) are always converted to WebP.
 // - Optionally downscales very large images to maxDimension (default 2400px) on the longest side.
 // - Returns a new File with `.webp` extension. On any failure, returns the original file.
 
@@ -40,9 +41,6 @@ export async function convertImageToWebp(
       canvas.toBlob(b => resolve(b), 'image/webp', quality)
     )
     if (!blob) return file
-
-    // Only use the WebP version if it's actually smaller than the original
-    if (blob.size >= file.size && file.type !== 'image/png') return file
 
     const baseName = file.name.replace(/\.[^.]+$/, '') || 'image'
     return new File([blob], `${baseName}.webp`, { type: 'image/webp' })
