@@ -59,9 +59,11 @@ async function loadNewsDetail() {
             <div class="news-date">${dateStr}</div>
             <h1 class="news-title">${title}</h1>
           </div>
-          ${imageHtml}
-          <div class="news-body">
-            ${contentHtml}
+          <div class="news-layout">
+            ${imageHtml}
+            <div class="news-body">
+              ${contentHtml}
+            </div>
           </div>
         </div>
       `
