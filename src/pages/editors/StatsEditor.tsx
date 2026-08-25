@@ -22,6 +22,7 @@ const StatsEditor: React.FC = () => {
     assists: '',
     matches: '',
     characteristics: '',
+    hero_text: '',
     translations: {} as Record<string, any>
   })
 
@@ -166,6 +167,7 @@ const StatsEditor: React.FC = () => {
          assists: totalAssists.toString(),
          matches: totalMatches.toString(),
          characteristics: finalCharacteristics,
+         hero_text: (manualData && manualData.hero_text) || '',
          translations: finalTranslations
        })
       
@@ -177,28 +179,22 @@ const StatsEditor: React.FC = () => {
     }
   }
 
-  const handleCharacteristicsChange = (value: string) => {
-      if (activeTab === 'pt') {
-          // Atualiza raiz e a entrada PT
-          const newTranslations = {
-              ...stats.translations,
-              pt: {
-                  ...(stats.translations.pt || {}),
-                  characteristics: value
-              }
-          };
-          setStats(prev => ({ ...prev, characteristics: value, translations: newTranslations }));
-      } else {
-          // Atualiza apenas a tradução específica
-          const newTranslations = {
-              ...stats.translations,
-              [activeTab]: {
-                  ...(stats.translations[activeTab] || {}),
-                  characteristics: value
-              }
-          };
-          setStats(prev => ({ ...prev, translations: newTranslations }));
-      }
+  // Campos de texto traduzíveis. PT grava na raiz (é a fonte) e espelha em
+  // translations.pt; os demais idiomas gravam só em translations[lang].
+  const TEXT_FIELDS = ['characteristics', 'hero_text'] as const
+  type TextField = typeof TEXT_FIELDS[number]
+
+  const handleTextChange = (field: TextField, value: string) => {
+      const alvo = activeTab === 'pt' ? 'pt' : activeTab
+      const newTranslations = {
+          ...stats.translations,
+          [alvo]: { ...(stats.translations[alvo] || {}), [field]: value }
+      };
+      setStats(prev => ({
+          ...prev,
+          ...(activeTab === 'pt' ? { [field]: value } : {}),
+          translations: newTranslations
+      }));
   }
 
   const handleTabChange = (lang: string) => {
@@ -207,20 +203,19 @@ const StatsEditor: React.FC = () => {
 
     // Se a tradução para este idioma ainda não existe ou está vazia, copia do PT
     const langTrans = stats.translations[lang];
-    if (!langTrans || !langTrans.characteristics) {
-        const newTranslations = {
-            ...stats.translations,
-            [lang]: {
-                characteristics: stats.characteristics
-            }
-        };
-        setStats(prev => ({ ...prev, translations: newTranslations }));
+    if (!langTrans || TEXT_FIELDS.every(f => !langTrans[f])) {
+        const seed: Record<string, string> = {};
+        TEXT_FIELDS.forEach(f => { seed[f] = (stats as any)[f] || '' });
+        setStats(prev => ({
+            ...prev,
+            translations: { ...stats.translations, [lang]: { ...(langTrans || {}), ...seed } }
+        }));
     }
   }
 
-  const getCharacteristicsValue = () => {
-      if (activeTab === 'pt') return stats.characteristics;
-      return stats.translations[activeTab]?.characteristics || '';
+  const getTextValue = (field: TextField) => {
+      if (activeTab === 'pt') return (stats as any)[field] || '';
+      return stats.translations[activeTab]?.[field] || '';
   }
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -230,7 +225,7 @@ const StatsEditor: React.FC = () => {
     // Garante que PT está salvo nas traduções também
     const finalTranslations = { ...stats.translations };
     if (!finalTranslations.pt) {
-        finalTranslations.pt = { characteristics: stats.characteristics };
+        finalTranslations.pt = { characteristics: stats.characteristics, hero_text: stats.hero_text };
     }
 
     try {
@@ -240,7 +235,8 @@ const StatsEditor: React.FC = () => {
           goals_per_game: stats.goals_per_game,
           assists: stats.assists,
           matches: stats.matches,
-          characteristics: stats.characteristics, 
+          characteristics: stats.characteristics,
+          hero_text: stats.hero_text,
           updated_at: new Date().toISOString()
       };
 
@@ -258,7 +254,7 @@ const StatsEditor: React.FC = () => {
           
           // Se erro for de coluna ausente OU erro genérico que impede salvamento
           // Vamos tentar salvar APENAS na coluna characteristics com o HACK
-          if (error.message?.includes('translations') || error.code === '42703') { 
+          if (error.message?.includes('translations') || error.message?.includes('hero_text') || error.code === '42703') { 
               console.warn('Usando fallback HACK para salvar traduções.');
               
               const fallbackCharacteristics = `${stats.characteristics}|||${JSON.stringify(finalTranslations)}`;
@@ -355,9 +351,9 @@ const StatsEditor: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', marginBottom: '10px', color: '#888' }}>Principais Características ({activeTab.toUpperCase()})</label>
-            
-            {/* Abas de Idioma */}
+            <label style={{ display: 'block', marginBottom: '10px', color: '#888' }}>Textos da Home ({activeTab.toUpperCase()})</label>
+
+            {/* Abas de Idioma — valem para os dois textos abaixo */}
             <div style={{ display: 'flex', gap: '5px', marginBottom: '10px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
                 {LANGUAGES.map(lang => (
                     <div 
@@ -381,9 +377,23 @@ const StatsEditor: React.FC = () => {
                 ))}
             </div>
 
-            <textarea 
-              value={getCharacteristicsValue()}
-              onChange={(e) => handleCharacteristicsChange(e.target.value)}
+            <label style={{ display: 'block', margin: '0 0 6px', color: '#ccc', fontSize: '14px' }}>
+              Apresentação (topo da home, abaixo do nome)
+            </label>
+            <textarea
+              value={getTextValue('hero_text')}
+              onChange={(e) => handleTextChange('hero_text', e.target.value)}
+              rows={3}
+              placeholder="Ambidestra, finalização precisa e leitura de jogo rara…"
+              style={{ width: '100%', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px', resize: 'vertical', marginBottom: '20px' }}
+            />
+
+            <label style={{ display: 'block', margin: '0 0 6px', color: '#ccc', fontSize: '14px' }}>
+              Principais características (seção "Sobre a Maia")
+            </label>
+            <textarea
+              value={getTextValue('characteristics')}
+              onChange={(e) => handleTextChange('characteristics', e.target.value)}
               rows={4}
               style={{ width: '100%', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px', resize: 'vertical' }}
             />

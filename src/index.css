@@ -1,3 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tokens do design system (usados pelo ScrollArea e futuros componentes ui/). */
+@layer base {
+  :root {
+    --border: 214 32% 91%;  /* #E2E8F0 */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --border: 217 33% 18%;  /* #1E293B */
+  }
+}
+
 /* Reset e estilos base */
 * {
   margin: 0;

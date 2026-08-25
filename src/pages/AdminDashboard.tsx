@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabaseClient'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 // Editors
 import StatsEditor from './editors/StatsEditor'
@@ -68,7 +69,8 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Tabs Navigation */}
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '10px', overflowX: 'auto' }}>
+        <ScrollArea style={{ marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', width: 'max-content' }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -88,6 +90,8 @@ const AdminDashboard: React.FC = () => {
             </button>
           ))}
         </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         {/* Content Area */}
         <div style={{ minHeight: '500px' }}>

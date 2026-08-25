@@ -14,13 +14,35 @@ interface StatCategory {
   items: StatItem[]
 }
 
+// Tradução de um card. Ícones e ordem ficam só na raiz — não mudam com o idioma.
+// As categorias são referenciadas pelo id para sobreviver a reordenações.
+interface CatTranslation {
+  name?: string
+  items?: string[]
+}
+
+interface TrajTranslation {
+  title?: string
+  cats?: Record<string, CatTranslation>
+}
+
 interface TrajectoryCard {
   id: string
   title: string
   left_image_url: string
   stats_data?: StatCategory[]
   display_order: number
+  translations?: Record<string, TrajTranslation>
 }
+
+const LANGUAGES = [
+  { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/br.png' },
+  { code: 'en', label: 'English', flag: 'https://flagcdn.com/w40/gb.png' },
+  { code: 'es', label: 'Español', flag: 'https://flagcdn.com/w40/es.png' },
+  { code: 'de', label: 'Deutsch', flag: 'https://flagcdn.com/w40/de.png' },
+  { code: 'fr', label: 'Français', flag: 'https://flagcdn.com/w40/fr.png' },
+  { code: 'it', label: 'Italiano', flag: 'https://flagcdn.com/w40/it.png' }
+]
 
 // Ícones disponíveis
 const availableIcons = [
@@ -108,6 +130,72 @@ const TrajectoryEditor: React.FC = () => {
   
   const [editingCard, setEditingCard] = useState<Partial<TrajectoryCard> | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [activeTab, setActiveTab] = useState('pt')
+
+  /* ---------------------------------------------------- edição por idioma */
+  // Em PT grava na raiz (é a fonte); nos demais, dentro de translations[lang].
+  const isPt = activeTab === 'pt'
+
+  const patchTranslation = (mutate: (t: TrajTranslation) => TrajTranslation) => {
+    if (!editingCard) return
+    const all = editingCard.translations || {}
+    setEditingCard({
+      ...editingCard,
+      translations: { ...all, [activeTab]: mutate(all[activeTab] || {}) }
+    })
+  }
+
+  const getTitle = () =>
+    isPt ? (editingCard?.title || '') : (editingCard?.translations?.[activeTab]?.title || '')
+
+  const setTitle = (value: string) => {
+    if (!editingCard) return
+    if (isPt) setEditingCard({ ...editingCard, title: value })
+    else patchTranslation(t => ({ ...t, title: value }))
+  }
+
+  const getCatName = (cat: StatCategory) =>
+    isPt ? (cat.name || '') : (editingCard?.translations?.[activeTab]?.cats?.[cat.id]?.name || '')
+
+  const setCatName = (cat: StatCategory, value: string) => {
+    if (isPt) { updateCategoryName(cat.id, value); return }
+    patchTranslation(t => ({
+      ...t,
+      cats: { ...(t.cats || {}), [cat.id]: { ...(t.cats?.[cat.id] || {}), name: value } }
+    }))
+  }
+
+  const getItemText = (cat: StatCategory, index: number) =>
+    isPt
+      ? (cat.items[index]?.text || '')
+      : (editingCard?.translations?.[activeTab]?.cats?.[cat.id]?.items?.[index] || '')
+
+  const setItemText = (cat: StatCategory, index: number, value: string) => {
+    if (isPt) { updateItem(cat.id, index, 'text', value); return }
+    patchTranslation(t => {
+      const atual = t.cats?.[cat.id] || {}
+      const items = [...(atual.items || [])]
+      items[index] = value
+      return { ...t, cats: { ...(t.cats || {}), [cat.id]: { ...atual, items } } }
+    })
+  }
+
+  // Ao abrir um idioma vazio, parte do PT em vez de campos em branco.
+  const handleTabChange = (lang: string) => {
+    setActiveTab(lang)
+    if (lang === 'pt' || !editingCard) return
+    const all = editingCard.translations || {}
+    if (all[lang] && Object.keys(all[lang]).length) return
+
+    const cats: Record<string, CatTranslation> = {}
+    ;(editingCard.stats_data || []).forEach(c => {
+      cats[c.id] = { name: c.name, items: c.items.map(i => i.text) }
+    })
+    setEditingCard({
+      ...editingCard,
+      translations: { ...all, [lang]: { title: editingCard.title, cats } }
+    })
+  }
 
   useEffect(() => {
     fetchCards()
@@ -198,30 +286,42 @@ const TrajectoryEditor: React.FC = () => {
     if (!editingCard) return
 
     try {
-      let error
-      if (isEditing && editingCard.id) {
-        const { error: updateError } = await supabase
-          .from('trajectory_cards')
-          .update({
-            title: editingCard.title,
-            left_image_url: editingCard.left_image_url,
-            stats_data: editingCard.stats_data,
-            display_order: editingCard.display_order
-          })
-          .eq('id', editingCard.id)
-        error = updateError
-      } else {
+      const minOrder = cards.length > 0 ? Math.min(...cards.map(c => c.display_order ?? 0)) : 1
+
+      const gravar = async (comTraducoes: boolean) => {
+        const dados: Record<string, unknown> = {
+          title: editingCard.title,
+          left_image_url: editingCard.left_image_url,
+          stats_data: editingCard.stats_data
+        }
+        if (comTraducoes) dados.translations = editingCard.translations || {}
+
+        if (isEditing && editingCard.id) {
+          dados.display_order = editingCard.display_order
+          return (await supabase.from('trajectory_cards').update(dados).eq('id', editingCard.id)).error
+        }
         // Novo card entra no topo da lista
-        const minOrder = cards.length > 0 ? Math.min(...cards.map(c => c.display_order ?? 0)) : 1
-        const { error: insertError } = await supabase
-          .from('trajectory_cards')
-          .insert([{
-            title: editingCard.title,
-            left_image_url: editingCard.left_image_url,
-            stats_data: editingCard.stats_data,
-            display_order: minOrder - 1
-          }])
-        error = insertError
+        dados.display_order = minOrder - 1
+        return (await supabase.from('trajectory_cards').insert([dados])).error
+      }
+
+      let error = await gravar(true)
+
+      // A coluna translations pode não existir ainda (migration pendente).
+      // Salva o resto em vez de perder a edição inteira, e avisa.
+      const colunaAusente = error && (error.code === '42703' || /translations/.test(error.message || ''))
+      if (colunaAusente) {
+        error = await gravar(false)
+        if (!error) {
+          setMessage({
+            text: 'Card salvo, mas as traduções não foram gravadas: falta rodar a migration que cria a coluna "translations" em trajectory_cards.',
+            type: 'error'
+          })
+          setEditingCard(null)
+          setIsEditing(false)
+          await fetchCards()
+          return
+        }
       }
 
       if (error) throw error
@@ -236,6 +336,7 @@ const TrajectoryEditor: React.FC = () => {
   }
 
   const startNewCard = () => {
+    setActiveTab('pt')
     setEditingCard({
       title: '',
       left_image_url: '',
@@ -312,8 +413,8 @@ const TrajectoryEditor: React.FC = () => {
           </label>
           <input 
             type="text" 
-            value={cat.name} 
-            onChange={(e) => updateCategoryName(cat.id, e.target.value)}
+            value={getCatName(cat)} 
+            onChange={(e) => setCatName(cat, e.target.value)}
             placeholder={isMain ? "Ex: Sub 20" : "Ex: Sub 17"}
             list="cat-suggestions"
             style={{ width: '100%', padding: '8px', backgroundColor: '#333', border: '1px solid #444', color: '#fff', fontWeight: 'bold', borderRadius: '4px' }}
@@ -342,8 +443,8 @@ const TrajectoryEditor: React.FC = () => {
             
             <input 
               type={specialLabel ? "number" : "text"}
-              value={item.text} 
-              onChange={e => updateItem(cat.id, itemIndex, 'text', e.target.value)}
+              value={getItemText(cat, itemIndex)} 
+              onChange={e => setItemText(cat, itemIndex, e.target.value)}
               placeholder={specialLabel ? "Apenas números" : "Ex: 14 Partidas"}
               style={{ flex: 1, padding: '8px', backgroundColor: '#333', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
             />
@@ -413,7 +514,7 @@ const TrajectoryEditor: React.FC = () => {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => { setEditingCard(card); setIsEditing(true); }} style={{ padding: '8px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>✏️</button>
+                  <button onClick={() => { setActiveTab('pt'); setEditingCard(card); setIsEditing(true); }} style={{ padding: '8px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>✏️</button>
                   <button onClick={() => handleDelete(card.id)} style={{ padding: '8px', backgroundColor: '#ff4d4d33', color: '#ff4d4d', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>🗑️</button>
                 </div>
               </div>
@@ -425,12 +526,39 @@ const TrajectoryEditor: React.FC = () => {
           <h2 style={{ marginBottom: '20px', color: '#fff' }}>{isEditing ? 'Editar Card' : 'Novo Card de Trajetória'}</h2>
           
           <form onSubmit={handleSave}>
+            {/* Abas de idioma: PT edita a raiz, os demais gravam em translations. */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px', flexWrap: 'wrap' }}>
+              {LANGUAGES.map(l => (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => handleTabChange(l.code)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 14px', borderRadius: '5px', cursor: 'pointer', border: 'none',
+                    backgroundColor: activeTab === l.code ? '#3cc674' : 'transparent',
+                    color: activeTab === l.code ? '#000' : '#888',
+                    fontWeight: activeTab === l.code ? 'bold' : 'normal'
+                  }}
+                >
+                  <img src={l.flag} alt="" width={20} height={14} style={{ objectFit: 'cover' }} />
+                  {l.label}
+                </button>
+              ))}
+            </div>
+
+            {!isPt && (
+              <div style={{ marginBottom: '20px', padding: '10px 14px', backgroundColor: '#3cc67414', border: '1px solid #3cc67440', borderRadius: '5px', color: '#3cc674', fontSize: '13px' }}>
+                Editando a tradução em <strong>{LANGUAGES.find(l => l.code === activeTab)?.label}</strong>. Imagem, ícones e ordem são comuns a todos os idiomas.
+              </div>
+            )}
+
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', color: '#888', marginBottom: '5px' }}>Título (Time/Clube)</label>
               <input 
                 type="text" 
-                value={editingCard.title} 
-                onChange={e => setEditingCard({...editingCard, title: e.target.value})}
+                value={getTitle()} 
+                onChange={e => setTitle(e.target.value)}
                 required
                 style={{ width: '100%', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px' }}
               />

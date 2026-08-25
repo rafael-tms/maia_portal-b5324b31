@@ -2,6 +2,9 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
+  // O admin é estilizado com CSS do Webflow + estilos inline. O preflight do
+  // Tailwind resetaria tudo isso, então geramos só as utilities usadas.
+  corePlugins: { preflight: false },
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {

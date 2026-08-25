@@ -71,3 +71,33 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Padrão de scroll (global)
+
+Todo scroll do sistema segue o mesmo visual: trilho transparente e thumb
+arredondado de 10px em branco quase transparente — `rgba(255,255,255,.32)`,
+`.55` no hover. A cor vive em `--scrollbar-thumb` (`css/scrollbar.css`), que é a
+fonte única: o CSS estático e o `<ScrollArea>` React leem a mesma variável.
+
+**React** — use `<ScrollArea>` (`src/components/ui/scroll-area.tsx`, Radix UI).
+Dá scrollbar overlay com auto-hide. Requer altura definida no container.
+
+```tsx
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+
+<ScrollArea className="h-[600px] w-full rounded-md border">
+  <div className="min-w-max">{/* conteúdo */}</div>
+  <ScrollBar orientation="horizontal" /> {/* só se precisar de scroll horizontal */}
+</ScrollArea>
+```
+
+**HTML estático** (home, galeria, notícias, vídeos, montagem) — `css/scrollbar.css`
+já estiliza todo `overflow` da página. Basta linkar o arquivo no `<head>`.
+Em containers roláveis, adicione `data-scroll` (ativa o fade quando sem hover) e
+`data-scrollbar="light"` quando o fundo for claro — lá o branco sumiria, então a
+variante usa `rgba(16,28,20,.24)`.
+
+> CSS não reproduz o overlay + auto-hide do Radix: nas páginas estáticas a barra
+> ocupa 10px e é sempre visível. Em React, prefira `<ScrollArea>`.
+
+Regressão é pega por `node scripts/check-scroll-standard.mjs` (rodar após `npm run build`).
