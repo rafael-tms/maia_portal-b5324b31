@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const Sidebar: React.FC = () => {
   const location = useLocation()
@@ -32,7 +33,8 @@ const Sidebar: React.FC = () => {
         <h2 style={{ color: '#3cc674', margin: 0 }}>Maia Admin</h2>
       </div>
 
-      <nav style={{ flex: 1 }}>
+      <ScrollArea style={{ flex: 1, minHeight: 0 }}>
+        <nav>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {menuItems.map((item) => (
             <li key={item.path} style={{ marginBottom: '10px' }}>
@@ -56,7 +58,8 @@ const Sidebar: React.FC = () => {
             </li>
           ))}
         </ul>
-      </nav>
+        </nav>
+      </ScrollArea>
 
       <div style={{ marginTop: 'auto', borderTop: '1px solid #333', paddingTop: '20px' }}>
         <button 

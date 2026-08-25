@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../utils/supabaseClient'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const SupabaseTables: React.FC = () => {
   const [tables, setTables] = useState<string[]>([])
@@ -118,24 +119,21 @@ const SupabaseTables: React.FC = () => {
       {!loading && tables.length > 0 && (
         <div>
           <h4>📋 Tabelas encontradas ({tables.length}):</h4>
-          <ul style={{ 
-            listStyle: 'none', 
-            padding: 0,
-            maxHeight: '200px',
-            overflowY: 'auto'
-          }}>
-            {tables.map((table, index) => (
-              <li key={index} style={{ 
-                padding: '8px', 
-                margin: '4px 0', 
-                backgroundColor: '#e8f5e8',
-                borderRadius: '4px',
-                border: '1px solid #c8e6c9'
-              }}>
-                🗂️ {table}
-              </li>
-            ))}
-          </ul>
+          <ScrollArea style={{ height: '200px' }}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {tables.map((table, index) => (
+                <li key={index} style={{
+                  padding: '8px',
+                  margin: '4px 0',
+                  backgroundColor: '#e8f5e8',
+                  borderRadius: '4px',
+                  border: '1px solid #c8e6c9'
+                }}>
+                  🗂️ {table}
+                </li>
+              ))}
+            </ul>
+          </ScrollArea>
         </div>
       )}
       

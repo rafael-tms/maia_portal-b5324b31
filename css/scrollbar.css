@@ -1,0 +1,62 @@
+/* =========================================================================
+   Scroll padrão do sistema — páginas estáticas (home, galeria, notícias,
+   vídeos, montagem, admin shell).
+   Mesmos tokens do <ScrollArea> React (src/components/ui/scroll-area.tsx):
+   trilho transparente, thumb arredondado de 10px na cor --border.
+
+   Limite conhecido: CSS não reproduz o overlay + auto-hide do Radix. Aqui a
+   barra é sempre visível e ocupa 10px. Em React, use <ScrollArea>.
+   ========================================================================= */
+
+/* Fonte única da cor do thumb: vale para este CSS e para o <ScrollArea> React. */
+:root {
+  --scrollbar-size: 10px;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.32); /* branco quase transparente */
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.55);
+}
+
+/* Opt-in para containers sobre fundo claro, onde o branco sumiria. */
+[data-scrollbar='light'] {
+  --scrollbar-thumb: rgba(16, 28, 20, 0.24);
+  --scrollbar-thumb-hover: rgba(16, 28, 20, 0.42);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* WebKit / Chromium */
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* Aproximação do auto-hide: some enquanto não há interação com o container. */
+@media (hover: hover) and (pointer: fine) {
+  *::-webkit-scrollbar-thumb {
+    transition: background-color 0.2s ease;
+  }
+
+  :where(html, body):not(:hover)::-webkit-scrollbar-thumb,
+  [data-scroll]:not(:hover):not(:focus-within)::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+}
