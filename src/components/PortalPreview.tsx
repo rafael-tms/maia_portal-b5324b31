@@ -22,6 +22,17 @@ interface PortalPreviewProps {
 const FRAME_W = 1440
 const FRAME_H = 900
 
+/** Idiomas disponíveis para testar o preview. */
+const PREVIEW_LANGS: { code: string; name: string }[] = [
+  { code: 'pt', name: 'Português' },
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Español' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'fr', name: 'Français' },
+  { code: 'it', name: 'Italiano' }
+]
+
+
 /**
  * Renderiza a seção REAL do portal dentro de um iframe, alimentando os
  * renderizadores do site com os dados ainda não salvos do Admin.
