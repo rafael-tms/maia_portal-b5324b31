@@ -7,6 +7,20 @@
   <meta name="description" content="Maia Rodrigues — futebolista, centro avante. Ambidestra, finalização precisa e leitura de jogo rara.">
   <link href="images/Favicone2.webp" rel="shortcut icon" type="image/webp">
   <link href="images/Favicone2.webp" rel="apple-touch-icon">
+  <script>
+    /* Modo pré-visualização do Admin (?preview=1): força o idioma pedido sem
+       gravar nada no localStorage do visitante e marca o documento. */
+    (function(){
+      var q = new URLSearchParams(location.search);
+      if (q.get('preview') !== '1') return;
+      document.documentElement.setAttribute('data-preview','1');
+      var l = q.get('lang');
+      if (!l) return;
+      var get = localStorage.getItem.bind(localStorage);
+      localStorage.getItem = function(k){ return k === 'maia-site-lang' ? l : get(k) };
+      localStorage.setItem = function(){};
+    })();
+  </script>
   <link href="css/scrollbar.css" rel="stylesheet" type="text/css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -1,7 +1,7 @@
 // Home (Redesign v3) — dados do Supabase + interações da página.
 // Substitui, apenas nesta página, os antigos update-{stats,about,today,trajectory,
 // home-media,home-videos,gallery-home,contact}.js, que emitiam markup do Webflow.
-import { supabase } from './supabase-client.js'
+import { supabase, previewMode, previewReady } from './supabase-client.js'
 import {
   lang, esc, json, tr, fmtDate,
   applyI18n, wireLangMenu, videoThumb, wirePlayers, cameFromSite, newsLink, splitFeatured
@@ -618,6 +618,7 @@ function wireInteractions() {
 
 /* --------------------------------------------------------------------- go */
 async function load() {
+  await previewReady
   const [player, today, trajectory, news, videos, gallery, contact] = await Promise.all([
     // '*' e não a lista de colunas: hero_text pode ainda não existir no banco.
     supabase.from('player_stats').select('*').limit(1).maybeSingle(),
@@ -646,6 +647,7 @@ async function load() {
 }
 
 async function loadAbout() {
+  await previewReady
   const { data } = await supabase.from('about_info').select('*').order('display_order', { ascending: true })
   renderAbout((data || []).filter(r => !r.deleted_at))
 }
@@ -654,7 +656,7 @@ async function loadAbout() {
  * de abertura e direto na seção de origem. O salto só pode acontecer depois de
  * renderTrajectory(), que define a altura da seção pinada e desloca tudo abaixo. */
 function skipIntroOnReturn() {
-  if (location.hash || cameFromSite()) document.getElementById('intro')?.remove()
+  if (previewMode || location.hash || cameFromSite()) document.getElementById('intro')?.remove()
 }
 
 function jumpToHash() {
