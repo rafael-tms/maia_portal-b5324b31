@@ -81,17 +81,37 @@ const PortalPreview: React.FC<PortalPreviewProps> = ({
         <span style={{ fontSize: '12px', color: SITE.textMuted }}>
           Seção real do portal ({section}) com as alterações ainda não salvas
         </span>
-        <button
-          type="button"
-          onClick={() => setNonce(n => n + 1)}
-          style={{
-            padding: '6px 14px', background: 'transparent', color: SITE.green,
-            border: `1px solid ${SITE.green}`, borderRadius: '8px', cursor: 'pointer',
-            fontSize: '12px', fontWeight: 700
-          }}
-        >
-          ↻ Recarregar
-        </button>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          {PREVIEW_LANGS.map(l => (
+            <button
+              key={l.code}
+              type="button"
+              onClick={() => setViewLang(l.code)}
+              title={l.name}
+              style={{
+                padding: '4px 8px',
+                background: viewLang === l.code ? SITE.green : 'transparent',
+                color: viewLang === l.code ? '#06210f' : SITE.text,
+                border: `1px solid ${viewLang === l.code ? SITE.green : SITE.border}`,
+                borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 700
+              }}
+            >
+              {l.code.toUpperCase()}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => setNonce(n => n + 1)}
+            style={{
+              padding: '6px 14px', background: 'transparent', color: SITE.green,
+              border: `1px solid ${SITE.green}`, borderRadius: '8px', cursor: 'pointer',
+              fontSize: '12px', fontWeight: 700
+            }}
+          >
+            ↻ Recarregar
+          </button>
+        </div>
+
       </div>
 
       <div
