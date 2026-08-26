@@ -226,9 +226,9 @@ const AboutEditor: React.FC = () => {
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {items.map(item => (
-                  <div key={item.id} style={{ backgroundColor: '#151515', border: '1px solid #222', borderRadius: '8px', padding: '16px' }}>
-                    <div style={{ fontSize: '12px', color: '#3cc674', textTransform: 'uppercase', letterSpacing: '1px' }}>{getItemValue(item, 'label') || '—'}</div>
-                    <div style={{ fontSize: '18px', color: '#fff', marginTop: '6px' }}>{getItemValue(item, 'value') || '—'}</div>
+                  <div key={item.id} style={{ backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '12px', padding: '16px' }}>
+                    <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{getItemValue(item, 'label') || '—'}</div>
+                    <div style={{ fontSize: '18px', color: SITE.text, marginTop: '6px', fontFamily: SITE.headingFont, fontWeight: 700 }}>{getItemValue(item, 'value') || '—'}</div>
                   </div>
                 ))}
               </div>
