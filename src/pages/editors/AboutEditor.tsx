@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
 
 const LANGUAGES = [
   { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/pt.png' },

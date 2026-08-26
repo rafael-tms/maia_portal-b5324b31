@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 interface StatItem {
