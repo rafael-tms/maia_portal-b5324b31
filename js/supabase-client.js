@@ -76,3 +76,58 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 console.log('[supabase-client] ✅ Cliente criado (cache SWR ativo)');
+
+/* ------------------------------------------------------------------ preview
+ * Modo pré-visualização do Admin: a página é aberta dentro de um <iframe> com
+ * ?preview=1 e recebe, via postMessage, as linhas ainda NÃO salvas. As tabelas
+ * enviadas passam a responder com esses dados em vez de consultar o banco —
+ * assim o preview é a própria seção real do portal, 100% igual.            */
+const PREVIEW = (() => {
+  try { return new URLSearchParams(location.search).get('preview') === '1' } catch { return false }
+})();
+
+export const previewMode = PREVIEW;
+
+let previewOverrides = {};
+let resolveReady;
+export const previewReady = PREVIEW
+  ? new Promise(r => { resolveReady = r })
+  : Promise.resolve();
+
+if (PREVIEW) {
+  const rawFrom = supabase.from.bind(supabase);
+
+  const stubFor = (rows) => {
+    const list = Array.isArray(rows) ? rows : (rows ? [rows] : []);
+    const stub = {};
+    const passthrough = [
+      'select', 'order', 'eq', 'neq', 'is', 'not', 'in', 'or', 'filter',
+      'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'limit', 'range', 'match'
+    ];
+    passthrough.forEach(m => { stub[m] = () => stub });
+    const one = () => Promise.resolve({ data: list[0] ?? null, error: null });
+    stub.maybeSingle = one;
+    stub.single = one;
+    stub.then = (res, rej) => Promise.resolve({ data: list, error: null }).then(res, rej);
+    stub.catch = (rej) => Promise.resolve({ data: list, error: null }).catch(rej);
+    return stub;
+  };
+
+  supabase.from = (table) =>
+    Object.prototype.hasOwnProperty.call(previewOverrides, table)
+      ? stubFor(previewOverrides[table])
+      : rawFrom(table);
+
+  window.addEventListener('message', (ev) => {
+    const d = ev.data;
+    if (!d || d.type !== 'maia-preview-data') return;
+    previewOverrides = d.overrides || {};
+    if (resolveReady) { resolveReady(); resolveReady = null }
+  });
+
+  // Pede os dados ao Admin (o iframe pode terminar de carregar antes dele ouvir)
+  const ask = () => { try { window.parent.postMessage({ type: 'maia-preview-request' }, '*') } catch (e) {} };
+  ask();
+  const t = setInterval(() => { resolveReady ? ask() : clearInterval(t) }, 150);
+  setTimeout(() => { clearInterval(t); if (resolveReady) { resolveReady(); resolveReady = null } }, 4000);
+}
