@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
 
 const LANGUAGES = [
   { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/pt.png' },
@@ -14,6 +15,7 @@ const StatsEditor: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState({ text: '', type: '' })
   const [activeTab, setActiveTab] = useState('pt')
+  const [showPreview, setShowPreview] = useState(false)
   
   const [stats, setStats] = useState({
     id: 'db940e8a-aed5-41cd-a2e8-a7adcf44a457', // ID Padrão/Fallback
@@ -314,7 +316,32 @@ const StatsEditor: React.FC = () => {
       )}
 
       <div style={{ backgroundColor: '#1a1a1a', padding: '30px', borderRadius: '10px' }}>
-        <h2 style={{ marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px', color: '#fff' }}>Atualizar Estatísticas</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
+          <h2 style={{ margin: 0, color: '#fff' }}>Atualizar Estatísticas</h2>
+          <PreviewButton onClick={() => setShowPreview(true)} />
+        </div>
+
+        <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Estatísticas (${activeTab.toUpperCase()})`}>
+          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+            <div style={{ fontSize: '64px', fontWeight: 'bold', color: '#3cc674', lineHeight: 1 }}>{stats.hero_number || '—'}</div>
+            <p style={{ color: '#ddd', maxWidth: '600px', margin: '15px auto 0' }}>{getTextValue('hero_text') || 'Sem texto de destaque'}</p>
+          </div>
+          <div style={{ backgroundColor: '#1a1a1a', borderRadius: '8px', padding: '10px 16px', color: '#3cc674', fontSize: '13px', marginBottom: '30px', textAlign: 'center' }}>
+            {getTextValue('hero_ticker') || 'Sem ticker'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '30px' }}>
+            {[{ l: 'Gols', v: stats.goals }, { l: 'Gols/Jogo', v: stats.goals_per_game }, { l: 'Assistências', v: stats.assists }, { l: 'Partidas', v: stats.matches }].map(box => (
+              <div key={box.l} style={{ backgroundColor: '#151515', border: '1px solid #222', borderRadius: '8px', padding: '18px', textAlign: 'center' }}>
+                <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#fff' }}>{box.v || '0'}</div>
+                <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase' }}>{box.l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ backgroundColor: '#151515', border: '1px solid #222', borderRadius: '8px', padding: '18px' }}>
+            <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', marginBottom: '8px' }}>Características</div>
+            <p style={{ margin: 0, color: '#ddd', lineHeight: 1.6 }}>{getTextValue('characteristics') || '—'}</p>
+          </div>
+        </PreviewModal>
         
         <form onSubmit={handleUpdate}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
