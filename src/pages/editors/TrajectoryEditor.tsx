@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 interface StatItem {
@@ -131,6 +132,7 @@ const TrajectoryEditor: React.FC = () => {
   const [editingCard, setEditingCard] = useState<Partial<TrajectoryCard> | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('pt')
+  const [showPreview, setShowPreview] = useState(false)
 
   /* ---------------------------------------------------- edição por idioma */
   // Em PT grava na raiz (é a fonte); nos demais, dentro de translations[lang].
@@ -523,7 +525,39 @@ const TrajectoryEditor: React.FC = () => {
         </>
       ) : (
         <div style={{ backgroundColor: '#1a1a1a', padding: '30px', borderRadius: '10px' }}>
-          <h2 style={{ marginBottom: '20px', color: '#fff' }}>{isEditing ? 'Editar Card' : 'Novo Card de Trajetória'}</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ margin: 0, color: '#fff' }}>{isEditing ? 'Editar Card' : 'Novo Card de Trajetória'}</h2>
+            <PreviewButton onClick={() => setShowPreview(true)} />
+          </div>
+
+          <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Trajetória (${activeTab.toUpperCase()})`}>
+            <div style={{ backgroundColor: '#151515', border: '1px solid #222', borderRadius: '10px', padding: '20px' }}>
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
+                <div style={{ width: '80px', height: '80px', flexShrink: 0, backgroundColor: '#000', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {editingCard.left_image_url
+                    ? <img src={editingCard.left_image_url} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                    : <span style={{ color: '#444', fontSize: '11px' }}>sem imagem</span>}
+                </div>
+                <h3 style={{ margin: 0, color: '#fff', fontSize: '22px' }}>{getTitle() || 'Sem título'}</h3>
+              </div>
+
+              {(editingCard.stats_data || []).map(cat => (
+                <div key={cat.id} style={{ marginBottom: '18px' }}>
+                  <div style={{ fontSize: '12px', color: '#3cc674', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>
+                    {getCatName(cat) || '—'}{cat.section === 'top' ? ' • destaque' : ''}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                    {cat.items.map((item, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#101010', border: '1px solid #222', borderRadius: '6px', padding: '8px 10px' }}>
+                        <img src={'/' + (item.icon || '').replace(/^\//, '')} alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                        <span style={{ color: '#fff' }}>{getItemText(cat, i) || '—'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PreviewModal>
           
           <form onSubmit={handleSave}>
             {/* Abas de idioma: PT edita a raiz, os demais gravam em translations. */}
