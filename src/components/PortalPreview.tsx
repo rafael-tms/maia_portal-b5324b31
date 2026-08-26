@@ -22,6 +22,17 @@ interface PortalPreviewProps {
 const FRAME_W = 1440
 const FRAME_H = 900
 
+/** Idiomas disponíveis para testar o preview. */
+const PREVIEW_LANGS: { code: string; name: string }[] = [
+  { code: 'pt', name: 'Português' },
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Español' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'fr', name: 'Français' },
+  { code: 'it', name: 'Italiano' }
+]
+
+
 /**
  * Renderiza a seção REAL do portal dentro de um iframe, alimentando os
  * renderizadores do site com os dados ainda não salvos do Admin.
@@ -35,13 +46,18 @@ const PortalPreview: React.FC<PortalPreviewProps> = ({
   const overridesRef = useRef(overrides)
   const [scale, setScale] = useState(0.6)
   const [nonce, setNonce] = useState(0)
+  // Idioma do preview: começa no da aba ativa, mas pode ser trocado para testar.
+  const [viewLang, setViewLang] = useState(lang)
+
+  useEffect(() => { setViewLang(lang) }, [lang])
 
   overridesRef.current = overrides
 
   const src = useMemo(
-    () => `${page}?preview=1&lang=${lang}&n=${nonce}#${section}`,
-    [page, lang, section, nonce]
+    () => `${page}?preview=1&lang=${viewLang}&n=${nonce}#${section}`,
+    [page, viewLang, section, nonce]
   )
+
 
   // Responde ao pedido do iframe e reenvia sempre que os dados mudarem.
   useEffect(() => {
@@ -76,17 +92,37 @@ const PortalPreview: React.FC<PortalPreviewProps> = ({
         <span style={{ fontSize: '12px', color: SITE.textMuted }}>
           Seção real do portal ({section}) com as alterações ainda não salvas
         </span>
-        <button
-          type="button"
-          onClick={() => setNonce(n => n + 1)}
-          style={{
-            padding: '6px 14px', background: 'transparent', color: SITE.green,
-            border: `1px solid ${SITE.green}`, borderRadius: '8px', cursor: 'pointer',
-            fontSize: '12px', fontWeight: 700
-          }}
-        >
-          ↻ Recarregar
-        </button>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          {PREVIEW_LANGS.map(l => (
+            <button
+              key={l.code}
+              type="button"
+              onClick={() => setViewLang(l.code)}
+              title={l.name}
+              style={{
+                padding: '4px 8px',
+                background: viewLang === l.code ? SITE.green : 'transparent',
+                color: viewLang === l.code ? '#06210f' : SITE.text,
+                border: `1px solid ${viewLang === l.code ? SITE.green : SITE.border}`,
+                borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 700
+              }}
+            >
+              {l.code.toUpperCase()}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => setNonce(n => n + 1)}
+            style={{
+              padding: '6px 14px', background: 'transparent', color: SITE.green,
+              border: `1px solid ${SITE.green}`, borderRadius: '8px', cursor: 'pointer',
+              fontSize: '12px', fontWeight: 700
+            }}
+          >
+            ↻ Recarregar
+          </button>
+        </div>
+
       </div>
 
       <div
