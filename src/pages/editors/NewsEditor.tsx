@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 const LANGUAGES = [
@@ -103,6 +104,7 @@ const NewsEditor: React.FC = () => {
   const [editingItem, setEditingItem] = useState<Partial<NewsItem> | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('pt')
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     fetchItems()
@@ -340,7 +342,34 @@ const NewsEditor: React.FC = () => {
         </>
       ) : (
         <div style={{ backgroundColor: '#1a1a1a', padding: '30px', borderRadius: '10px' }}>
-          <h2 style={{ marginBottom: '20px', color: '#fff' }}>{isEditing ? 'Editar Notícia' : 'Nova Notícia'}</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ margin: 0, color: '#fff' }}>{isEditing ? 'Editar Notícia' : 'Nova Notícia'}</h2>
+            <PreviewButton onClick={() => setShowPreview(true)} />
+          </div>
+
+          <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Notícia (${activeTab.toUpperCase()})`}>
+            <h1 style={{ color: '#fff', fontSize: '26px', margin: '0 0 6px' }}>{getFieldValue('title') || 'Sem título'}</h1>
+            <div style={{ color: '#888', fontSize: '12px', marginBottom: '20px' }}>
+              {editingItem?.published_date ? new Date(editingItem.published_date).toLocaleDateString('pt-BR') : '—'}
+              {editingItem?.show_on_home ? ' • Home' : ''}{editingItem?.is_featured ? ' • Destaque' : ''}
+            </div>
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+              <div style={{ flex: '0 0 320px', maxWidth: '320px' }}>
+                {editingItem?.image_url
+                  ? <img src={editingItem.image_url} alt="" style={{ width: '100%', objectFit: 'contain', borderRadius: '8px', backgroundColor: '#000' }} />
+                  : <div style={{ height: '200px', borderRadius: '8px', backgroundColor: '#101010', border: '1px solid #222', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#444', fontSize: '12px' }}>sem imagem</div>}
+              </div>
+              <div style={{ flex: 1, minWidth: '260px' }}>
+                {getFieldValue('summary') && (
+                  <p style={{ color: '#bbb', fontStyle: 'italic', marginTop: 0 }}>{getFieldValue('summary')}</p>
+                )}
+                <div style={{ color: '#ddd', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{getFieldValue('content') || 'Sem conteúdo'}</div>
+                {editingItem?.link_url && (
+                  <div style={{ marginTop: '14px', color: '#3cc674', fontSize: '13px' }}>{editingItem.link_url}</div>
+                )}
+              </div>
+            </div>
+          </PreviewModal>
           
           {/* Abas de Idioma */}
           <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>

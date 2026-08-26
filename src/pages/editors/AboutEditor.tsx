@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
 
 const LANGUAGES = [
   { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/pt.png' },
@@ -24,6 +25,7 @@ const AboutEditor: React.FC = () => {
   const [newItem, setNewItem] = useState({ label: '', value: '' })
   const [message, setMessage] = useState({ text: '', type: '' })
   const [activeTab, setActiveTab] = useState('pt')
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     fetchItems()
@@ -198,6 +200,8 @@ const AboutEditor: React.FC = () => {
         <div style={{ backgroundColor: '#1a1a1a', padding: '30px', borderRadius: '10px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
              <h2 style={{ color: '#fff', margin: 0 }}>Campos Existentes</h2>
+             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+             <PreviewButton onClick={() => setShowPreview(true)} />
              <button 
                 onClick={handleSaveAll}
                 style={{ 
@@ -213,7 +217,23 @@ const AboutEditor: React.FC = () => {
              >
                 Salvar Alterações
              </button>
+             </div>
           </div>
+
+          <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Sobre (${activeTab.toUpperCase()})`}>
+            {items.length === 0 ? (
+              <p style={{ color: '#888' }}>Nenhum campo cadastrado.</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {items.map(item => (
+                  <div key={item.id} style={{ backgroundColor: '#151515', border: '1px solid #222', borderRadius: '8px', padding: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#3cc674', textTransform: 'uppercase', letterSpacing: '1px' }}>{getItemValue(item, 'label') || '—'}</div>
+                    <div style={{ fontSize: '18px', color: '#fff', marginTop: '6px' }}>{getItemValue(item, 'value') || '—'}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </PreviewModal>
           
           {/* Abas de Idioma */}
           <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
