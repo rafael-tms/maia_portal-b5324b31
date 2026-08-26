@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PortalPreview from '../../components/PortalPreview'
 
 const LANGUAGES = [
   { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/pt.png' },
@@ -221,18 +222,7 @@ const AboutEditor: React.FC = () => {
           </div>
 
           <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Sobre (${activeTab.toUpperCase()})`}>
-            {items.length === 0 ? (
-              <p style={{ color: '#888' }}>Nenhum campo cadastrado.</p>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                {items.map(item => (
-                  <div key={item.id} style={{ backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '12px', padding: '16px' }}>
-                    <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{getItemValue(item, 'label') || '—'}</div>
-                    <div style={{ fontSize: '18px', color: SITE.text, marginTop: '6px', fontFamily: SITE.headingFont, fontWeight: 700 }}>{getItemValue(item, 'value') || '—'}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <PortalPreview section="sobre" lang={activeTab} height={560} overrides={{ about_info: items }} />
           </PreviewModal>
           
           {/* Abas de Idioma */}

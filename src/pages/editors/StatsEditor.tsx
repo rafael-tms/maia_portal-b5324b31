@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PortalPreview from '../../components/PortalPreview'
 
 const LANGUAGES = [
   { code: 'pt', label: 'Português', flag: 'https://flagcdn.com/w40/pt.png' },
@@ -322,25 +323,7 @@ const StatsEditor: React.FC = () => {
         </div>
 
         <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Estatísticas (${activeTab.toUpperCase()})`}>
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <div style={{ fontSize: '72px', fontWeight: 800, color: SITE.green, lineHeight: 1, fontFamily: SITE.headingFont, letterSpacing: '-.03em' }}>{stats.hero_number || '—'}</div>
-            <p style={{ color: SITE.text, maxWidth: '600px', margin: '15px auto 0', lineHeight: 1.6 }}>{getTextValue('hero_text') || 'Sem texto de destaque'}</p>
-          </div>
-          <div style={{ backgroundColor: 'rgba(60,198,116,.14)', borderRadius: '8px', padding: '10px 16px', color: SITE.green, fontSize: '13px', marginBottom: '30px', textAlign: 'center', fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase' }}>
-            {getTextValue('hero_ticker') || 'Sem ticker'}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '30px' }}>
-            {[{ l: 'Gols', v: stats.goals }, { l: 'Gols/Jogo', v: stats.goals_per_game }, { l: 'Assistências', v: stats.assists }, { l: 'Partidas', v: stats.matches }].map(box => (
-              <div key={box.l} style={{ backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '12px', padding: '18px', textAlign: 'center' }}>
-                <div style={{ fontSize: '30px', fontWeight: 800, color: SITE.text, fontFamily: SITE.headingFont }}>{box.v || '0'}</div>
-                <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{box.l}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '12px', padding: '18px' }}>
-            <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', fontWeight: 700 }}>Características</div>
-            <p style={{ margin: 0, color: SITE.text, lineHeight: 1.7 }}>{getTextValue('characteristics') || '—'}</p>
-          </div>
+          <PortalPreview section="hero" lang={activeTab} height={560} overrides={{ player_stats: [{ ...stats }] }} />
         </PreviewModal>
         
         <form onSubmit={handleUpdate}>

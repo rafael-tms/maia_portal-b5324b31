@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PortalPreview from '../../components/PortalPreview'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 interface StatItem {
@@ -531,32 +532,7 @@ const TrajectoryEditor: React.FC = () => {
           </div>
 
           <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Trajetória (${activeTab.toUpperCase()})`}>
-            <div style={{ backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '14px', padding: '20px' }}>
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '20px' }}>
-                <div style={{ width: '80px', height: '80px', flexShrink: 0, backgroundColor: SITE.bgDeep, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {editingCard.left_image_url
-                    ? <img src={editingCard.left_image_url} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                    : <span style={{ color: SITE.textMuted, fontSize: '11px' }}>sem imagem</span>}
-                </div>
-                <h3 style={{ margin: 0, color: SITE.text, fontSize: '24px', fontFamily: SITE.headingFont, fontWeight: 800, letterSpacing: '-.02em' }}>{getTitle() || 'Sem título'}</h3>
-              </div>
-
-              {(editingCard.stats_data || []).map(cat => (
-                <div key={cat.id} style={{ marginBottom: '18px' }}>
-                  <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', fontWeight: 700 }}>
-                    {getCatName(cat) || '—'}{cat.section === 'top' ? ' • destaque' : ''}
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                    {cat.items.map((item, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: SITE.bgDeep, border: `1px solid ${SITE.border}`, borderRadius: '8px', padding: '8px 10px' }}>
-                        <img src={'/' + (item.icon || '').replace(/^\//, '')} alt="" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
-                        <span style={{ color: SITE.text, fontWeight: 600 }}>{getItemText(cat, i) || '—'}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <PortalPreview section="trajetoria" lang={activeTab} height={560} overrides={{ trajectory_cards: previewTrajectoryCards() }} />
           </PreviewModal>
           
           <form onSubmit={handleSave}>
