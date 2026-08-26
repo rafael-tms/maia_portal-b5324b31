@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PortalPreview from '../../components/PortalPreview'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 const LANGUAGES = [
@@ -105,6 +106,22 @@ const NewsEditor: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('pt')
   const [showPreview, setShowPreview] = useState(false)
+
+  /* Notícias como a home receberia: só as marcadas para a home, ordenadas e
+   * limitadas a 4, com a notícia em edição já aplicada. */
+  const previewNewsItems = () => {
+    const list = items.filter((n: any) => !n.deleted_at)
+    const draft = editingItem ? { display_order: 9999, ...editingItem } : null
+    const merged = draft
+      ? (list.some(n => n.id === draft.id)
+          ? list.map(n => (n.id === draft.id ? { ...n, ...draft } : n))
+          : [draft as any, ...list])
+      : list
+    return merged
+      .filter((n: any) => n.show_on_home)
+      .sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0))
+      .slice(0, 4)
+  }
 
   useEffect(() => {
     fetchItems()
@@ -348,27 +365,7 @@ const NewsEditor: React.FC = () => {
           </div>
 
           <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Notícia (${activeTab.toUpperCase()})`}>
-            <h1 style={{ color: SITE.text, fontSize: '30px', margin: '0 0 6px', fontFamily: SITE.headingFont, fontWeight: 800, letterSpacing: '-.02em' }}>{getFieldValue('title') || 'Sem título'}</h1>
-            <div style={{ color: SITE.textMuted, fontSize: '12px', marginBottom: '20px' }}>
-              {editingItem?.published_date ? new Date(editingItem.published_date).toLocaleDateString('pt-BR') : '—'}
-              {editingItem?.show_on_home ? ' • Home' : ''}{editingItem?.is_featured ? ' • Destaque' : ''}
-            </div>
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-              <div style={{ flex: '0 0 320px', maxWidth: '320px' }}>
-                {editingItem?.image_url
-                  ? <img src={editingItem.image_url} alt="" style={{ width: '100%', objectFit: 'contain', borderRadius: '12px', backgroundColor: SITE.bgDeep }} />
-                  : <div style={{ height: '200px', borderRadius: '12px', backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: SITE.textMuted, fontSize: '12px' }}>sem imagem</div>}
-              </div>
-              <div style={{ flex: 1, minWidth: '260px' }}>
-                {getFieldValue('summary') && (
-                  <p style={{ color: SITE.textMuted, fontStyle: 'italic', marginTop: 0 }}>{getFieldValue('summary')}</p>
-                )}
-                <div style={{ color: SITE.text, lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{getFieldValue('content') || 'Sem conteúdo'}</div>
-                {editingItem?.link_url && (
-                  <div style={{ marginTop: '14px', color: SITE.green, fontSize: '13px', fontWeight: 700 }}>{editingItem.link_url}</div>
-                )}
-              </div>
-            </div>
+            <PortalPreview section="midia" lang={activeTab} height={560} overrides={{ news: previewNewsItems() }} />
           </PreviewModal>
           
           {/* Abas de Idioma */}

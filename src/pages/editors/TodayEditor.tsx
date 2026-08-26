@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PortalPreview from '../../components/PortalPreview'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 interface StatItem {
@@ -131,6 +132,19 @@ const TodayEditor: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('pt')
   const [showPreview, setShowPreview] = useState(false)
+
+  /* Lista de cards como o portal receberia: o card em edição substitui (ou
+   * entra em) a lista salva, mantendo a ordem de exibição. */
+  const previewTodayCards = () => {
+    const list = cards.filter((c: any) => !c.deleted_at)
+    const draft = editingCard ? { display_order: 9999, ...editingCard } : null
+    const merged = draft
+      ? (list.some(c => c.id === draft.id)
+          ? list.map(c => (c.id === draft.id ? { ...c, ...draft } : c))
+          : [...list, draft])
+      : list
+    return [...merged].sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0))
+  }
 
   useEffect(() => {
     fetchCards()
@@ -439,40 +453,7 @@ const TodayEditor: React.FC = () => {
           </div>
 
           <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Hoje (${activeTab.toUpperCase()})`}>
-            <div style={{ display: 'flex', gap: '20px', backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '14px', padding: '20px' }}>
-              <div style={{ width: '90px', height: '90px', flexShrink: 0, backgroundColor: SITE.bgDeep, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {editingCard.left_image_url
-                  ? <img src={editingCard.left_image_url} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                  : <span style={{ color: SITE.textMuted, fontSize: '11px' }}>sem imagem</span>}
-              </div>
-              <div style={{ flex: 1 }}>
-                {getValue('category') && (
-                  <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{getValue('category')}</div>
-                )}
-                <h3 style={{ margin: '4px 0 12px', color: SITE.text, fontFamily: SITE.headingFont, fontWeight: 800, letterSpacing: '-.02em', fontSize: '22px' }}>{getValue('title') || 'Sem título'}</h3>
-
-                {editingCard.type === 'news' ? (
-                  <>
-                    {editingCard.news_image_url && (
-                      <img src={editingCard.news_image_url} alt="" style={{ width: '100%', maxHeight: '260px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px' }} />
-                    )}
-                    <p style={{ color: SITE.text, lineHeight: 1.6, margin: 0 }}>{getValue('news_text') || 'Sem texto'}</p>
-                    {getValue('news_link') && (
-                      <div style={{ marginTop: '10px', color: SITE.green, fontSize: '13px', fontWeight: 700 }}>{getValue('news_link')}</div>
-                    )}
-                  </>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-                    {(editingCard.stats_data || []).map((item, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: SITE.bgDeep, border: `1px solid ${SITE.border}`, borderRadius: '8px', padding: '10px' }}>
-                        <img src={'/' + (item.icon || '').replace(/^\//, '')} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
-                        <span style={{ color: SITE.text, fontWeight: 600 }}>{getStatText(i) || '—'}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+            <PortalPreview section="sobre" lang={activeTab} height={560} overrides={{ today_cards: previewTodayCards() }} />
           </PreviewModal>
           
           <form onSubmit={handleSave}>
