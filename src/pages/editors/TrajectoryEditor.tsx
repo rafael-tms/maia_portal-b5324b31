@@ -135,6 +135,18 @@ const TrajectoryEditor: React.FC = () => {
   const [activeTab, setActiveTab] = useState('pt')
   const [showPreview, setShowPreview] = useState(false)
 
+  /* Cards de trajetória como o portal receberia, com o card em edição aplicado. */
+  const previewTrajectoryCards = () => {
+    const list = cards.filter((c: any) => !c.deleted_at)
+    const draft = editingCard ? { display_order: 9999, ...editingCard } : null
+    const merged = draft
+      ? (list.some(c => c.id === draft.id)
+          ? list.map(c => (c.id === draft.id ? { ...c, ...draft } : c))
+          : [...list, draft])
+      : list
+    return [...merged].sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0))
+  }
+
   /* ---------------------------------------------------- edição por idioma */
   // Em PT grava na raiz (é a fonte); nos demais, dentro de translations[lang].
   const isPt = activeTab === 'pt'

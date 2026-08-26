@@ -133,6 +133,19 @@ const TodayEditor: React.FC = () => {
   const [activeTab, setActiveTab] = useState('pt')
   const [showPreview, setShowPreview] = useState(false)
 
+  /* Lista de cards como o portal receberia: o card em edição substitui (ou
+   * entra em) a lista salva, mantendo a ordem de exibição. */
+  const previewTodayCards = () => {
+    const list = cards.filter((c: any) => !c.deleted_at)
+    const draft = editingCard ? { display_order: 9999, ...editingCard } : null
+    const merged = draft
+      ? (list.some(c => c.id === draft.id)
+          ? list.map(c => (c.id === draft.id ? { ...c, ...draft } : c))
+          : [...list, draft])
+      : list
+    return [...merged].sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0))
+  }
+
   useEffect(() => {
     fetchCards()
     ensureBucket()

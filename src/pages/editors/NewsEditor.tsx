@@ -107,6 +107,22 @@ const NewsEditor: React.FC = () => {
   const [activeTab, setActiveTab] = useState('pt')
   const [showPreview, setShowPreview] = useState(false)
 
+  /* Notícias como a home receberia: só as marcadas para a home, ordenadas e
+   * limitadas a 4, com a notícia em edição já aplicada. */
+  const previewNewsItems = () => {
+    const list = items.filter((n: any) => !n.deleted_at)
+    const draft = editingItem ? { display_order: 9999, ...editingItem } : null
+    const merged = draft
+      ? (list.some(n => n.id === draft.id)
+          ? list.map(n => (n.id === draft.id ? { ...n, ...draft } : n))
+          : [draft as any, ...list])
+      : list
+    return merged
+      .filter((n: any) => n.show_on_home)
+      .sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0))
+      .slice(0, 4)
+  }
+
   useEffect(() => {
     fetchItems()
     ensureBucket()
