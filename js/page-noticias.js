@@ -1,6 +1,6 @@
 // Página Na Mídia (redesign). Substitui js/update-news.js.
 import { supabase } from './supabase-client.js'
-import { applyI18n, wireLangMenu, wireReveal, dismissIntro, esc, fmtDate, tr, newsLink, isExternalLink } from './redesign-shared.js'
+import { applyI18n, wireLangMenu, wireReveal, dismissIntro, esc, fmtDate, tr, newsLink, isExternalLink, splitFeatured } from './redesign-shared.js'
 
 const I18N = {
   pt: { back: 'VOLTAR PARA HOME', title: 'Na Mídia', featured: 'DESTAQUE', read_more: 'LER MAIS', rights: '© 2026 Maia Rodrigues — Todos os direitos reservados', empty: 'Nenhuma notícia publicada ainda.' },
@@ -28,9 +28,11 @@ function render(news) {
     return
   }
 
-  const [first, ...rest] = news
-  const f = tr(first, ['title'])
-  featured.innerHTML = `<a class="news-hero" data-rv href="${esc(linkOf(first))}"${isExternal(first) ? ' target="_blank" rel="noopener"' : ''}>
+  const { destaque: first, demais: rest } = splitFeatured(news)
+
+  // Sem notícia marcada no admin não há card de destaque; todas vão para a grade.
+  const f = first ? tr(first, ['title']) : null
+  featured.innerHTML = !first ? '' : `<a class="news-hero" data-rv href="${esc(linkOf(first))}"${isExternal(first) ? ' target="_blank" rel="noopener"' : ''}>
       ${first.image_url ? `<img src="${esc(first.image_url)}" alt="${esc(f.title)}">` : ''}
       <div class="veil"></div>
       <div class="copy">

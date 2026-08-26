@@ -4,7 +4,7 @@
 import { supabase } from './supabase-client.js'
 import {
   lang, esc, json, tr, fmtDate,
-  applyI18n, wireLangMenu, videoThumb, wirePlayers, cameFromSite, newsLink
+  applyI18n, wireLangMenu, videoThumb, wirePlayers, cameFromSite, newsLink, splitFeatured
 } from './redesign-shared.js'
 
 const I18N = {
@@ -172,6 +172,21 @@ function renderStats(player, todayCards, trajectoryCards) {
 
   aplicar('stat-characteristics', 'characteristics')
   aplicar('hero-text', 'hero_text')
+
+  // Número da camisa: comum a todos os idiomas.
+  const num = document.getElementById('hero-number')
+  if (num && String(player.hero_number || '').trim()) num.textContent = String(player.hero_number).trim()
+
+  // Faixa rolante: o admin digita os itens separados por "·"; o espaçamento é
+  // do layout. O marquee desloca -50%, então precisa das duas cópias.
+  let faixa = player.hero_ticker || ''
+  if (alt && typeof alt !== 'string' && alt.hero_ticker) faixa = alt.hero_ticker
+  const track = document.getElementById('ticker-track')
+  if (track && faixa.trim()) {
+    const itens = faixa.split('·').map(s => s.trim()).filter(Boolean)
+    const texto = itens.join('  ·  ') + '  ·  '
+    Array.from(track.children).forEach(span => { span.textContent = texto })
+  }
 }
 
 /* ------------------------------------------------------------------ SOBRE */
@@ -401,11 +416,14 @@ function renderMedia(news) {
   if (!c) return
   if (!news.length) { c.innerHTML = ''; return }
 
-  const [feat, ...rest] = news
-  const f = tr(feat, ['title', 'summary'])
-  const featHref = newsLink(feat)
+  const { destaque: feat, demais: rest } = splitFeatured(news)
 
-  const featured = `<a class="feature-card" href="${esc(featHref)}" data-rv data-d="1" style="position:relative;min-height:440px;overflow:hidden;background:#061009;display:block;color:#fff">
+  // Sem notícia marcada como destaque, a coluna grande some e a lista ocupa
+  // a largura inteira — nada é promovido por estar em primeiro na ordem.
+  c.style.gridTemplateColumns = feat ? '1.5fr 1fr' : '1fr'
+
+  const f = feat ? tr(feat, ['title', 'summary']) : null
+  const featured = !feat ? '' : `<a class="feature-card" href="${esc(newsLink(feat, 'midia'))}" data-rv data-d="1" style="position:relative;min-height:440px;overflow:hidden;background:#061009;display:block;color:#fff">
     ${feat.image_url ? `<img class="feature-img" src="${esc(feat.image_url)}" alt="${esc(f.title)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.65,.2,1)">` : ''}
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,17,0) 40%,rgba(10,22,17,.95) 100%);pointer-events:none"></div>
     <div style="position:absolute;left:38px;right:38px;bottom:34px;pointer-events:none">
@@ -415,10 +433,12 @@ function renderMedia(news) {
     </div>
   </a>`
 
-  const side = `<div style="display:grid;grid-template-rows:repeat(${Math.max(rest.length, 1)},1fr);gap:2px">
+  const side = `<div style="display:grid;${feat
+      ? `grid-template-rows:repeat(${Math.max(rest.length, 1)},1fr)`
+      : 'grid-template-columns:repeat(3,1fr)'};gap:2px">
     ${rest.map((n, i) => {
       const t = tr(n, ['title'])
-      const href = newsLink(n)
+      const href = newsLink(n, 'midia')
       return `<a class="news-card" href="${esc(href)}" data-rv data-d="${i + 1}" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);padding:26px 30px;display:flex;flex-direction:column;justify-content:center;transition:background .4s,border-color .4s;color:#fff">
         <div style="font-size:11px;font-weight:800;color:#3cc674;letter-spacing:.14em">${esc(fmtDate(n.published_date))}</div>
         <div style="font-weight:700;font-size:17px;line-height:1.35;margin-top:9px">${esc(t.title)}</div>
@@ -559,12 +579,14 @@ function wireInteractions() {
   // Só sequestra a roda em ponteiro fino; no touch o scroll nativo resolve.
   window.addEventListener('wheel', ev => {
     if (!matchMedia('(pointer:fine)').matches) return
+    if (document.body.dataset.modalAberto) return  // vídeo aberto: não navega atrás dele
     ev.preventDefault()
     if (lock || Math.abs(ev.deltaY) < 3) return
     goTo(currentIndex() + (ev.deltaY > 0 ? 1 : -1))
   }, { passive: false })
 
   window.addEventListener('keydown', ev => {
+    if (document.body.dataset.modalAberto) return  // setas controlam o player, não a página
     if (['ArrowDown', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); goTo(currentIndex() + 1) }
     if (['ArrowUp', 'PageUp'].includes(ev.key)) { ev.preventDefault(); goTo(currentIndex() - 1) }
   })
@@ -601,9 +623,12 @@ async function load() {
     supabase.from('player_stats').select('*').limit(1).maybeSingle(),
     supabase.from('today_cards').select('*').order('display_order', { ascending: true }),
     supabase.from('trajectory_cards').select('*').order('display_order', { ascending: true }),
-    supabase.from('news').select('*').eq('show_on_home', true).order('display_order', { ascending: true }).limit(4),
-    supabase.from('videos').select('*').eq('is_active', true).eq('show_on_home', true).order('created_at', { ascending: false }).limit(3),
-    supabase.from('gallery').select('*').eq('is_active', true).order('display_order', { ascending: true }).limit(12),
+    // O .is('deleted_at', null) tem de vir na consulta, não depois no JS: com
+    // limit(), um registro na lixeira ocuparia uma das vagas e a seção viria
+    // com menos itens do que o cadastrado.
+    supabase.from('news').select('*').eq('show_on_home', true).is('deleted_at', null).order('display_order', { ascending: true }).limit(4),
+    supabase.from('videos').select('*').eq('is_active', true).eq('show_on_home', true).is('deleted_at', null).order('created_at', { ascending: false }).limit(3),
+    supabase.from('gallery').select('*').eq('is_active', true).is('deleted_at', null).order('display_order', { ascending: true }).limit(12),
     supabase.from('contact_info').select('*').limit(1).maybeSingle()
   ])
 

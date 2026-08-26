@@ -110,8 +110,14 @@ export function dismissIntro(id = 'intro', ms = 2000) {
   setTimeout(() => el.remove(), ms)
 }
 
-/** Volta para a página de origem real; cai no fallback em acesso direto. */
+/**
+ * Volta para a origem real da visita.
+ * A seção de origem viaja em ?from= porque o referrer é enviado sem o
+ * fragmento: quem sai da home pela seção Mídia voltaria para o topo dela.
+ */
 export function backTarget(fallback) {
+  const from = new URLSearchParams(location.search).get('from')
+  if (from && /^[a-z]+$/.test(from)) return `index.html#${from}`
   try {
     const ref = new URL(document.referrer)
     if (ref.origin === location.origin && ref.pathname !== location.pathname) {
@@ -133,13 +139,25 @@ export function wireBackLinks(fallback) {
  * Alguns registros trazem "#" ou espaços no link_url — isso é "sem link",
  * não um link válido, senão o card não leva a lugar nenhum.
  */
-export function newsLink(n) {
+export function newsLink(n, from) {
   const url = String(n.link_url || '').trim()
   if (url && url !== '#') return url
-  return `noticia-detalhe.html?id=${encodeURIComponent(n.id)}`
+  const origem = from ? `&from=${encodeURIComponent(from)}` : ''
+  return `noticia-detalhe.html?id=${encodeURIComponent(n.id)}${origem}`
 }
 
 export const isExternalLink = url => /^https?:/i.test(url)
+
+/**
+ * Separa a notícia em destaque das demais, preservando a ordem original.
+ * O destaque sai só de quem está marcado no admin (is_featured). Sem ninguém
+ * marcado não há destaque — nenhuma notícia é promovida por estar em primeiro.
+ */
+export function splitFeatured(news) {
+  const i = news.findIndex(n => n.is_featured)
+  if (i < 0) return { destaque: null, demais: news }
+  return { destaque: news[i], demais: news.filter((_, k) => k !== i) }
+}
 
 /* ------------------------------------------------------------------ vídeo */
 export function youtubeId(url) {
@@ -165,16 +183,66 @@ export const videoThumb = v => {
   return yt ? `https://img.youtube.com/vi/${yt}/hqdefault.jpg` : ''
 }
 
-/** Troca a capa pelo player no primeiro clique. */
+/* O player abre em modal para o vídeo ficar grande. O modal é criado uma vez
+ * e reaproveitado; os estilos são inline porque ele é montado aqui — assim não
+ * precisa existir uma cópia do CSS na home e outra nas páginas internas. */
+let modalVideo, palcoVideo, focoAnterior
+
+function montarModal() {
+  if (modalVideo) return modalVideo
+
+  modalVideo = document.createElement('div')
+  modalVideo.setAttribute('role', 'dialog')
+  modalVideo.setAttribute('aria-modal', 'true')
+  modalVideo.setAttribute('aria-label', 'Vídeo')
+  modalVideo.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(6,16,9,.94);display:none;align-items:center;justify-content:center;padding:24px'
+
+  const caixa = document.createElement('div')
+  caixa.style.cssText = 'position:relative;width:min(1200px,94vw);aspect-ratio:16/9;max-height:84vh;background:#000'
+
+  palcoVideo = document.createElement('div')
+  palcoVideo.style.cssText = 'position:absolute;inset:0'
+
+  const fechar = document.createElement('button')
+  fechar.type = 'button'
+  fechar.setAttribute('aria-label', 'Fechar vídeo')
+  fechar.textContent = '✕'
+  fechar.style.cssText = 'position:absolute;top:-46px;right:0;background:transparent;border:0;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:8px'
+  fechar.addEventListener('click', fecharVideoModal)
+
+  caixa.append(palcoVideo, fechar)
+  modalVideo.append(caixa)
+  // Clique fora fecha; dentro da caixa, não.
+  modalVideo.addEventListener('click', ev => { if (ev.target === modalVideo) fecharVideoModal() })
+  document.addEventListener('keydown', ev => { if (ev.key === 'Escape') fecharVideoModal() })
+  document.body.append(modalVideo)
+  return modalVideo
+}
+
+export function abrirVideoModal(url) {
+  if (!url) return
+  montarModal()
+  palcoVideo.innerHTML = isDirectVideo(url)
+    ? `<video src="${esc(url)}" controls autoplay playsinline style="width:100%;height:100%"></video>`
+    : `<iframe src="${esc(embedUrl(url))}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe>`
+  modalVideo.style.display = 'flex'
+  // Sinaliza para a home não navegar entre seções com o modal aberto.
+  document.body.dataset.modalAberto = '1'
+  focoAnterior = document.activeElement
+  modalVideo.querySelector('button').focus()
+}
+
+export function fecharVideoModal() {
+  if (!modalVideo || modalVideo.style.display === 'none') return
+  palcoVideo.innerHTML = ''   // zera o src para o vídeo parar de tocar
+  modalVideo.style.display = 'none'
+  delete document.body.dataset.modalAberto
+  focoAnterior?.focus?.()
+}
+
+/** Abre o vídeo em modal ao clicar na capa. */
 export function wirePlayers(scope) {
   scope.querySelectorAll('.video-slot').forEach(slot => {
-    slot.addEventListener('click', () => {
-      const url = slot.getAttribute('data-src')
-      if (!url) return
-      slot.innerHTML = isDirectVideo(url)
-        ? `<video src="${esc(url)}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%"></video>`
-        : `<iframe src="${esc(embedUrl(url))}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>`
-      slot.style.cursor = 'default'
-    }, { once: true })
+    slot.addEventListener('click', () => abrirVideoModal(slot.getAttribute('data-src')))
   })
 }
