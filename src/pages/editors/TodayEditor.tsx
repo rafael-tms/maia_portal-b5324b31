@@ -12,6 +12,9 @@ interface TranslationData {
   news_text?: string
   news_link?: string
   category?: string
+  // Texto de cada item de stats_data, pelo índice. Ícones ficam só na raiz:
+  // não mudam com o idioma.
+  items?: string[]
 }
 
 interface TodayCard {
@@ -200,11 +203,6 @@ const TodayEditor: React.FC = () => {
 
     try {
       // Prepara os dados
-      // HACK: Como não podemos garantir a migration da coluna 'translations', 
-      // vamos salvar as traduções dentro de 'stats_data' para cards do tipo 'news'.
-      const isNews = editingCard.type === 'news';
-      const translationsPayload = editingCard.translations || {};
-      
       const cardData: any = {
         type: editingCard.type,
         title: editingCard.title,
@@ -213,37 +211,35 @@ const TodayEditor: React.FC = () => {
         news_text: editingCard.news_text,
         news_link: editingCard.news_link,
         category: editingCard.category,
+        stats_data: editingCard.stats_data,
         display_order: editingCard.display_order || (cards.length + 1)
       }
 
-      if (isNews) {
-          // Para notícias, usamos stats_data para guardar traduções (JSON Object)
-          cardData.stats_data = translationsPayload;
-          // Garantimos que não enviamos a coluna translations para evitar erro se ela não existir
-          delete cardData.translations; 
-      } else {
-          // Para stats, salvamos normal
-          cardData.stats_data = editingCard.stats_data;
-          delete cardData.translations;
+      const gravar = async (comTraducoes: boolean) => {
+        const dados = comTraducoes
+          ? { ...cardData, translations: editingCard.translations || {} }
+          : cardData
+        if (isEditing && editingCard.id) {
+          return (await supabase.from('today_cards').update(dados).eq('id', editingCard.id)).error
+        }
+        return (await supabase.from('today_cards').insert([dados])).error
       }
 
-      let error
-      
-      try {
-          if (isEditing && editingCard.id) {
-            const { error: updateError } = await supabase
-              .from('today_cards')
-              .update(cardData)
-              .eq('id', editingCard.id)
-            error = updateError
-          } else {
-            const { error: insertError } = await supabase
-              .from('today_cards')
-              .insert([cardData])
-            error = insertError
-          }
-      } catch (e: any) {
-          error = e
+      let error = await gravar(true)
+
+      // A coluna translations pode não existir ainda (migration pendente).
+      // Salva o resto em vez de perder a edição — e nunca dentro de stats_data,
+      // que é onde a versão anterior gravava e destruía as estatísticas do card.
+      if (error && (error.code === '42703' || /translations/.test(error.message || ''))) {
+        error = await gravar(false)
+        if (!error) {
+          setMessage({
+            text: 'Card salvo, mas as traduções não foram gravadas: falta rodar a migration que cria a coluna "translations" em today_cards.',
+            type: 'error'
+          })
+          setEditingCard(null); setIsEditing(false); setActiveTab('pt'); fetchCards();
+          return
+        }
       }
 
       if (error) throw error
@@ -351,7 +347,8 @@ const TodayEditor: React.FC = () => {
                 title: editingCard.title,
                 news_text: editingCard.news_text,
                 news_link: editingCard.news_link,
-                category: editingCard.category 
+                category: editingCard.category,
+                items: (editingCard.stats_data || []).map(i => i.text)
             }
         };
 
@@ -360,6 +357,25 @@ const TodayEditor: React.FC = () => {
             translations: newTranslations
         })
     }
+  }
+
+  const getStatText = (index: number) => {
+    if (!editingCard) return ''
+    if (activeTab === 'pt') return editingCard.stats_data?.[index]?.text || ''
+    return editingCard.translations?.[activeTab]?.items?.[index] || ''
+  }
+
+  const setStatText = (index: number, value: string) => {
+    if (!editingCard) return
+    if (activeTab === 'pt') { handleStatChange(index, 'text', value); return }
+    const translations = editingCard.translations || {}
+    const atual = translations[activeTab] || {}
+    const items = [...(atual.items || [])]
+    items[index] = value
+    setEditingCard({
+      ...editingCard,
+      translations: { ...translations, [activeTab]: { ...atual, items } }
+    })
   }
 
   const getValue = (field: keyof TranslationData | 'title') => {
@@ -426,9 +442,9 @@ const TodayEditor: React.FC = () => {
               onChange={(url) => setEditingCard({...editingCard, left_image_url: url})}
             />
 
-            {/* Abas de Idioma (Apenas para News) */}
-            {editingCard.type === 'news' && (
-                <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
+            {/* Abas de Idioma — valem para os dois tipos de card */}
+            {(
+                <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', borderBottom: '1px solid #333', paddingBottom: '10px', flexWrap: 'wrap' }}>
                     {LANGUAGES.map(lang => (
                         <div 
                             key={lang.code}
@@ -453,7 +469,7 @@ const TodayEditor: React.FC = () => {
             )}
 
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', color: '#888', marginBottom: '5px' }}>Título {editingCard.type === 'news' && `(${activeTab.toUpperCase()})`}</label>
+              <label style={{ display: 'block', color: '#888', marginBottom: '5px' }}>Título ({activeTab.toUpperCase()})</label>
               <input 
                 type="text" 
                 value={getValue('title')} 
@@ -465,17 +481,22 @@ const TodayEditor: React.FC = () => {
 
             {editingCard.type === 'stats' && (
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', color: '#888', marginBottom: '5px' }}>Categoria (Opcional)</label>
-                <select 
-                  value={editingCard.category || ''} 
-                  onChange={e => setEditingCard({...editingCard, category: e.target.value})}
+                <label style={{ display: 'block', color: '#888', marginBottom: '5px' }}>Categoria ({activeTab.toUpperCase()})</label>
+                {/* input + datalist: sugere as categorias de sempre e aceita
+                    texto livre — mesmo padrão do editor de Trajetória. */}
+                <input
+                  type="text"
+                  value={getValue('category')}
+                  onChange={e => handleFieldChange('category', e.target.value)}
+                  placeholder="Selecione ou digite..."
+                  list="today-cat-suggestions"
                   style={{ width: '100%', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px' }}
-                >
-                  <option value="">Selecione...</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                />
+                <datalist id="today-cat-suggestions">
+                  {categories.filter(Boolean).map(cat => (
+                    <option key={cat} value={cat} />
                   ))}
-                </select>
+                </datalist>
               </div>
             )}
 
@@ -529,8 +550,8 @@ const TodayEditor: React.FC = () => {
                       
                       <input 
                         type={specialLabel ? "number" : "text"} 
-                        value={stat.text} 
-                        onChange={e => handleStatChange(index, 'text', e.target.value)}
+                        value={getStatText(index)} 
+                        onChange={e => setStatText(index, e.target.value)}
                         placeholder={specialLabel ? "Apenas números" : "Ex: 2024/2025"}
                         style={{ flex: 1, padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px' }}
                       />

@@ -20,6 +20,7 @@ interface NewsItem {
   link_url: string
   published_date: string
   show_on_home: boolean
+  is_featured?: boolean
   display_order: number
   translations?: Record<string, any>
 }
@@ -160,11 +161,23 @@ const NewsEditor: React.FC = () => {
         link_url: editingItem.link_url || '#',
         published_date: editingItem.published_date || new Date().toISOString().split('T')[0],
         show_on_home: editingItem.show_on_home || false,
+        // Destaque depende de estar na home: sem isso o card grande ficaria
+        // apontando para uma notícia que a home não lista.
+        is_featured: !!(editingItem.show_on_home && editingItem.is_featured),
         display_order: editingItem.display_order || 0
       }
 
       if (editingItem.translations && Object.keys(editingItem.translations).length > 0) {
         itemData.translations = editingItem.translations
+      }
+
+      // Exclusividade: tira o destaque das outras ANTES de gravar esta, senão o
+      // índice único do banco recusaria a operação por ter duas marcadas.
+      if (itemData.is_featured) {
+        let limpar = supabase.from('news').update({ is_featured: false }).eq('is_featured', true)
+        if (isEditing && editingItem.id) limpar = limpar.neq('id', editingItem.id)
+        const { error: erroLimpar } = await limpar
+        if (erroLimpar) throw erroLimpar
       }
 
       let error
@@ -203,6 +216,7 @@ const NewsEditor: React.FC = () => {
       link_url: '#',
       published_date: new Date().toISOString().split('T')[0],
       show_on_home: false,
+      is_featured: false,
       translations: {}
     })
     setIsEditing(false)
@@ -311,6 +325,7 @@ const NewsEditor: React.FC = () => {
                       <div style={{ color: '#888', fontSize: '12px', display: 'flex', gap: '10px' }}>
                         <span>{new Date(item.published_date).toLocaleDateString('pt-BR')}</span>
                         {item.show_on_home && <span style={{ color: '#3cc674' }}>• Exibir na Home</span>}
+                        {item.is_featured && <span style={{ color: '#3cc674', fontWeight: 'bold' }}>• DESTAQUE</span>}
                       </div>
                     </div>
                   </div>
@@ -413,11 +428,38 @@ const NewsEditor: React.FC = () => {
                 <input 
                   type="checkbox" 
                   checked={editingItem.show_on_home}
-                  onChange={(e) => setEditingItem({...editingItem, show_on_home: e.target.checked})}
+                  onChange={(e) => setEditingItem({
+                    ...editingItem,
+                    show_on_home: e.target.checked,
+                    // Tirar da home tira o destaque junto: um não existe sem o outro.
+                    is_featured: e.target.checked ? editingItem.is_featured : false
+                  })}
                   style={{ accentColor: '#3cc674', width: '20px', height: '20px' }}
                 />
                 Exibir na Home
               </label>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                cursor: editingItem.show_on_home ? 'pointer' : 'not-allowed',
+                color: editingItem.show_on_home ? '#fff' : '#666'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={!!editingItem.is_featured}
+                  disabled={!editingItem.show_on_home}
+                  onChange={(e) => setEditingItem({ ...editingItem, is_featured: e.target.checked })}
+                  style={{ accentColor: '#3cc674', width: '20px', height: '20px' }}
+                />
+                Notícia em destaque
+              </label>
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '6px', paddingLeft: '30px' }}>
+                {editingItem.show_on_home
+                  ? 'Ocupa o card grande em "Na Mídia". Ao salvar, o destaque anterior é removido — só uma notícia por vez.'
+                  : 'Disponível apenas para notícias com "Exibir na Home" ativo.'}
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>

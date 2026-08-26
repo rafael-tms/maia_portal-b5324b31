@@ -23,6 +23,8 @@ const StatsEditor: React.FC = () => {
     matches: '',
     characteristics: '',
     hero_text: '',
+    hero_number: '',
+    hero_ticker: '',
     translations: {} as Record<string, any>
   })
 
@@ -168,6 +170,8 @@ const StatsEditor: React.FC = () => {
          matches: totalMatches.toString(),
          characteristics: finalCharacteristics,
          hero_text: (manualData && manualData.hero_text) || '',
+         hero_number: (manualData && manualData.hero_number) || '',
+         hero_ticker: (manualData && manualData.hero_ticker) || '',
          translations: finalTranslations
        })
       
@@ -181,7 +185,7 @@ const StatsEditor: React.FC = () => {
 
   // Campos de texto traduzíveis. PT grava na raiz (é a fonte) e espelha em
   // translations.pt; os demais idiomas gravam só em translations[lang].
-  const TEXT_FIELDS = ['characteristics', 'hero_text'] as const
+  const TEXT_FIELDS = ['characteristics', 'hero_text', 'hero_ticker'] as const
   type TextField = typeof TEXT_FIELDS[number]
 
   const handleTextChange = (field: TextField, value: string) => {
@@ -225,7 +229,7 @@ const StatsEditor: React.FC = () => {
     // Garante que PT está salvo nas traduções também
     const finalTranslations = { ...stats.translations };
     if (!finalTranslations.pt) {
-        finalTranslations.pt = { characteristics: stats.characteristics, hero_text: stats.hero_text };
+        finalTranslations.pt = { characteristics: stats.characteristics, hero_text: stats.hero_text, hero_ticker: stats.hero_ticker };
     }
 
     try {
@@ -237,6 +241,8 @@ const StatsEditor: React.FC = () => {
           matches: stats.matches,
           characteristics: stats.characteristics,
           hero_text: stats.hero_text,
+          hero_number: stats.hero_number,
+          hero_ticker: stats.hero_ticker,
           updated_at: new Date().toISOString()
       };
 
@@ -254,7 +260,7 @@ const StatsEditor: React.FC = () => {
           
           // Se erro for de coluna ausente OU erro genérico que impede salvamento
           // Vamos tentar salvar APENAS na coluna characteristics com o HACK
-          if (error.message?.includes('translations') || error.message?.includes('hero_text') || error.code === '42703') { 
+          if (error.message?.includes('translations') || /hero_(text|number|ticker)/.test(error.message || '') || error.code === '42703') { 
               console.warn('Usando fallback HACK para salvar traduções.');
               
               const fallbackCharacteristics = `${stats.characteristics}|||${JSON.stringify(finalTranslations)}`;
@@ -350,6 +356,20 @@ const StatsEditor: React.FC = () => {
             </div>
           </div>
 
+          {/* Número da camisa: é um número, então não passa pelas abas de idioma. */}
+          <div style={{ marginBottom: '30px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#888' }}>
+              Número da camisa (fundo da hero) — comum a todos os idiomas
+            </label>
+            <input
+              type="text"
+              value={stats.hero_number}
+              onChange={e => setStats(prev => ({ ...prev, hero_number: e.target.value }))}
+              placeholder="19"
+              style={{ width: '120px', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px' }}
+            />
+          </div>
+
           <div style={{ marginBottom: '30px' }}>
             <label style={{ display: 'block', marginBottom: '10px', color: '#888' }}>Textos da Home ({activeTab.toUpperCase()})</label>
 
@@ -386,6 +406,17 @@ const StatsEditor: React.FC = () => {
               rows={3}
               placeholder="Ambidestra, finalização precisa e leitura de jogo rara…"
               style={{ width: '100%', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px', resize: 'vertical', marginBottom: '20px' }}
+            />
+
+            <label style={{ display: 'block', margin: '0 0 6px', color: '#ccc', fontSize: '14px' }}>
+              Faixa rolante (acima de GOLS / ASSISTÊNCIAS) — itens separados por ·
+            </label>
+            <input
+              type="text"
+              value={getTextValue('hero_ticker')}
+              onChange={(e) => handleTextChange('hero_ticker', e.target.value)}
+              placeholder="CENTRO AVANTE · AMBIDESTRA · COBRADORA DE FALTAS · LEITURA DE JOGO"
+              style={{ width: '100%', padding: '10px', backgroundColor: '#2a2a2a', border: '1px solid #333', color: '#fff', borderRadius: '5px', marginBottom: '20px' }}
             />
 
             <label style={{ display: 'block', margin: '0 0 6px', color: '#ccc', fontSize: '14px' }}>
