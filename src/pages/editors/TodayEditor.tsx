@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../utils/supabaseClient'
-import PreviewModal, { PreviewButton } from '../../components/PreviewModal'
+import PreviewModal, { PreviewButton, SITE } from '../../components/PreviewModal'
 import { convertImageToWebp } from '../../utils/imageToWebp'
 
 interface StatItem {
@@ -439,34 +439,34 @@ const TodayEditor: React.FC = () => {
           </div>
 
           <PreviewModal open={showPreview} onClose={() => setShowPreview(false)} title={`Pré-visualização — Hoje (${activeTab.toUpperCase()})`}>
-            <div style={{ display: 'flex', gap: '20px', backgroundColor: '#151515', border: '1px solid #222', borderRadius: '10px', padding: '20px' }}>
-              <div style={{ width: '90px', height: '90px', flexShrink: 0, backgroundColor: '#000', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '20px', backgroundColor: SITE.card, border: `1px solid ${SITE.border}`, borderRadius: '14px', padding: '20px' }}>
+              <div style={{ width: '90px', height: '90px', flexShrink: 0, backgroundColor: SITE.bgDeep, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {editingCard.left_image_url
                   ? <img src={editingCard.left_image_url} alt="" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                  : <span style={{ color: '#444', fontSize: '11px' }}>sem imagem</span>}
+                  : <span style={{ color: SITE.textMuted, fontSize: '11px' }}>sem imagem</span>}
               </div>
               <div style={{ flex: 1 }}>
                 {getValue('category') && (
-                  <div style={{ fontSize: '11px', color: '#3cc674', textTransform: 'uppercase', letterSpacing: '1px' }}>{getValue('category')}</div>
+                  <div style={{ fontSize: '11px', color: SITE.green, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>{getValue('category')}</div>
                 )}
-                <h3 style={{ margin: '4px 0 12px', color: '#fff' }}>{getValue('title') || 'Sem título'}</h3>
+                <h3 style={{ margin: '4px 0 12px', color: SITE.text, fontFamily: SITE.headingFont, fontWeight: 800, letterSpacing: '-.02em', fontSize: '22px' }}>{getValue('title') || 'Sem título'}</h3>
 
                 {editingCard.type === 'news' ? (
                   <>
                     {editingCard.news_image_url && (
-                      <img src={editingCard.news_image_url} alt="" style={{ width: '100%', maxHeight: '260px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px' }} />
+                      <img src={editingCard.news_image_url} alt="" style={{ width: '100%', maxHeight: '260px', objectFit: 'cover', borderRadius: '10px', marginBottom: '12px' }} />
                     )}
-                    <p style={{ color: '#ddd', lineHeight: 1.6, margin: 0 }}>{getValue('news_text') || 'Sem texto'}</p>
+                    <p style={{ color: SITE.text, lineHeight: 1.6, margin: 0 }}>{getValue('news_text') || 'Sem texto'}</p>
                     {getValue('news_link') && (
-                      <div style={{ marginTop: '10px', color: '#3cc674', fontSize: '13px' }}>{getValue('news_link')}</div>
+                      <div style={{ marginTop: '10px', color: SITE.green, fontSize: '13px', fontWeight: 700 }}>{getValue('news_link')}</div>
                     )}
                   </>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                     {(editingCard.stats_data || []).map((item, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#101010', border: '1px solid #222', borderRadius: '6px', padding: '10px' }}>
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: SITE.bgDeep, border: `1px solid ${SITE.border}`, borderRadius: '8px', padding: '10px' }}>
                         <img src={'/' + (item.icon || '').replace(/^\//, '')} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
-                        <span style={{ color: '#fff' }}>{getStatText(i) || '—'}</span>
+                        <span style={{ color: SITE.text, fontWeight: 600 }}>{getStatText(i) || '—'}</span>
                       </div>
                     ))}
                   </div>
