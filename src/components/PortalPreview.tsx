@@ -35,13 +35,18 @@ const PortalPreview: React.FC<PortalPreviewProps> = ({
   const overridesRef = useRef(overrides)
   const [scale, setScale] = useState(0.6)
   const [nonce, setNonce] = useState(0)
+  // Idioma do preview: começa no da aba ativa, mas pode ser trocado para testar.
+  const [viewLang, setViewLang] = useState(lang)
+
+  useEffect(() => { setViewLang(lang) }, [lang])
 
   overridesRef.current = overrides
 
   const src = useMemo(
-    () => `${page}?preview=1&lang=${lang}&n=${nonce}#${section}`,
-    [page, lang, section, nonce]
+    () => `${page}?preview=1&lang=${viewLang}&n=${nonce}#${section}`,
+    [page, viewLang, section, nonce]
   )
+
 
   // Responde ao pedido do iframe e reenvia sempre que os dados mudarem.
   useEffect(() => {
