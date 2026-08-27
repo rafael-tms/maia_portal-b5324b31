@@ -12,6 +12,7 @@ const Sidebar: React.FC = () => {
     { name: 'Trajetória', path: '/dashboard/trajetoria' },
     { name: 'Na Mídia', path: '/dashboard/midia' },
     { name: 'Vídeos', path: '/dashboard/videos' },
+    { name: 'Redes Sociais', path: '/dashboard/social' },
     { name: 'Galeria', path: '/dashboard/galeria' },
     { name: 'Contato', path: '/dashboard/contato' },
   ]

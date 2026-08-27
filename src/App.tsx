@@ -10,6 +10,7 @@ import NewsEditor from './pages/editors/NewsEditor'
 import GalleryEditor from './pages/editors/GalleryEditor'
 import VideoEditor from './pages/editors/VideoEditor'
 import ContactEditor from './pages/editors/ContactEditor'
+import SocialEditor from './pages/editors/SocialEditor'
 import './App.css'
 
 const App: React.FC = () => {
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <Route path="trajetoria" element={<TrajectoryEditor />} />
           <Route path="midia" element={<NewsEditor />} />
           <Route path="videos" element={<VideoEditor />} />
+          <Route path="social" element={<SocialEditor />} />
           <Route path="galeria" element={<GalleryEditor />} />
           <Route path="contato" element={<ContactEditor />} />
         </Route>
