@@ -179,8 +179,9 @@ const SocialEditor: React.FC = () => {
       )}
 
       {showPreview && (
-        <PreviewModal title="Redes Sociais — como aparece no portal" onClose={() => setShowPreview(false)}>
+        <PreviewModal open title="Redes Sociais — como aparece no portal" onClose={() => setShowPreview(false)}>
           <PortalPreview section="social" lang="pt" overrides={{ social_posts: visible }} />
+
         </PreviewModal>
       )}
     </div>
