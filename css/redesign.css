@@ -154,3 +154,12 @@ body.light .page-footer { background: #0a1611; color: #fff; border-top: 0; }
   .article p { font-size: 16px; }
   .page-footer { padding: 26px 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 }
+
+/* ---- Carrossel de redes sociais (home #social) ---- */
+#home-social-carousel::-webkit-scrollbar { display: none; }
+#home-social-carousel { -ms-overflow-style: none; }
+.social-card:hover img { transform: scale(1.06); }
+@media (max-width: 900px) {
+  #social .pad-x { padding: 70px 22px 50px !important; }
+  #home-social-carousel .social-card { width: 66vw !important; }
+}
