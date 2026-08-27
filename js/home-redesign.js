@@ -695,7 +695,7 @@ function wireInteractions() {
 /* --------------------------------------------------------------------- go */
 async function load() {
   await previewReady
-  const [player, today, trajectory, news, videos, gallery, contact] = await Promise.all([
+  const [player, today, trajectory, news, videos, gallery, contact, social] = await Promise.all([
     // '*' e não a lista de colunas: hero_text pode ainda não existir no banco.
     supabase.from('player_stats').select('*').limit(1).maybeSingle(),
     supabase.from('today_cards').select('*').order('display_order', { ascending: true }),
