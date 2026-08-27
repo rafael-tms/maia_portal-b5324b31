@@ -706,7 +706,10 @@ async function load() {
     supabase.from('news').select('*').eq('show_on_home', true).is('deleted_at', null).order('display_order', { ascending: true }).limit(4),
     supabase.from('videos').select('*').eq('is_active', true).eq('show_on_home', true).is('deleted_at', null).order('created_at', { ascending: false }).limit(3),
     supabase.from('gallery').select('*').eq('is_active', true).is('deleted_at', null).order('display_order', { ascending: true }).limit(12),
-    supabase.from('contact_info').select('*').limit(1).maybeSingle()
+    supabase.from('contact_info').select('*').limit(1).maybeSingle(),
+    // A tabela social_posts pode ainda não existir: o catch evita derrubar o
+    // Promise.all e a seção cai no estado vazio com os links dos perfis.
+    supabase.from('social_posts').select('*').eq('hidden', false).is('deleted_at', null).order('posted_at', { ascending: false }).limit(12).then(r => r, () => ({ data: [] }))
   ])
 
   const alive = res => (res.data || []).filter(r => !r.deleted_at)
@@ -719,6 +722,7 @@ async function load() {
   renderMedia(alive(news))
   renderVideos(alive(videos))
   renderGallery(alive(gallery))
+  renderSocial(alive(social))
   renderContact(contact.data)
 }
 
