@@ -242,6 +242,7 @@
     <a href="#sobre" data-dot="sobre" title="Sobre" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
     <a href="#trajetoria" data-dot="trajetoria" title="Trajetória" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
     <a href="#midia" data-dot="midia" title="Mídia" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
+    <a href="#social" data-dot="social" title="Redes Sociais" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
     <a href="#videos" data-dot="videos" title="Vídeos" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
     <a href="#galeria" data-dot="galeria" title="Galeria" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
     <a href="#contato" data-dot="contato" title="Contato" style="width:9px;height:9px;border-radius:50%;background:rgba(120,140,128,.5);display:block;transition:all .3s"></a>
@@ -351,6 +352,31 @@
       <div id="home-media-container" class="grid-media" style="display:grid;grid-template-columns:1.5fr 1fr;gap:2px;margin-top:40px"></div>
     </div>
   </section>
+
+  <!-- ================= REDES SOCIAIS ================= -->
+  <section id="social" data-sec="social" style="min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;background:#0a1611;color:#fff;position:relative;overflow:hidden">
+    <div style="position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(60,198,116,.14),transparent 70%);filter:blur(50px);top:-140px;left:-120px;animation:drift 19s ease-in-out infinite;pointer-events:none"></div>
+    <div class="pad-x" style="max-width:1360px;width:100%;margin:0 auto;padding:90px 56px 60px;box-sizing:border-box">
+      <div data-rv style="display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:12px;font-weight:800;letter-spacing:.3em;color:#3cc674;margin-bottom:20px" data-i18n="sec_social">04 / REDES SOCIAIS</div>
+          <h2 class="sec-title" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:54px;letter-spacing:-.03em" data-i18n="social_title">Redes Sociais</h2>
+          <div data-rvl style="height:5px;background:#3cc674;margin-top:16px"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px">
+          <a href="https://www.instagram.com/maialeonaa/" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#3cc674;letter-spacing:.18em">INSTAGRAM →</a>
+          <a href="https://www.tiktok.com/@maiakamperrodrigues" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#3cc674;letter-spacing:.18em">TIKTOK →</a>
+          <div style="display:flex;gap:8px">
+            <button type="button" id="social-prev" aria-label="Anterior" style="width:38px;height:38px;background:transparent;color:#3cc674;border:1px solid rgba(60,198,116,.5);border-radius:50%;cursor:pointer;font-size:15px;line-height:1">←</button>
+            <button type="button" id="social-next" aria-label="Próximo" style="width:38px;height:38px;background:transparent;color:#3cc674;border:1px solid rgba(60,198,116,.5);border-radius:50%;cursor:pointer;font-size:15px;line-height:1">→</button>
+          </div>
+        </div>
+      </div>
+      <div id="home-social-carousel" style="display:flex;gap:14px;margin-top:40px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;padding-bottom:6px"></div>
+    </div>
+  </section>
+
+
 
   <!-- ================= VÍDEOS ================= -->
   <section id="videos" data-sec="videos" style="min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;background:#0a1611;color:#fff;position:relative;overflow:hidden">

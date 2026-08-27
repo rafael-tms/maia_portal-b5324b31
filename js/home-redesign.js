@@ -8,12 +8,12 @@ import {
 } from './redesign-shared.js'
 
 const I18N = {
-  pt: { kicker:'FUTEBOLISTA — CENTRO AVANTE', hero_p:'Ambidestra, finalização precisa e leitura de jogo rara. A nova geração do ataque brasileiro — em campo na Alemanha, convocada pela seleção.', cta_hl:'VER HIGHLIGHTS', traj_title_u:'TRAJETÓRIA', goals:'GOLS', assists:'ASSISTÊNCIAS', matches:'PARTIDAS', gpg:'GOLS / JOGO', about_title:'Sobre<br>a Maia', about_p:'Ambidestra, boa finalização, bom posicionamento, boa leitura de jogo, cobradora de faltas e pênaltis.', langs_label:'IDIOMAS', traj_title:'Trajetória', midia_title:'Na Mídia', videos_title:'Vídeos', gal_title:'Galeria', see_all:'VER TODAS →', see_all_m:'VER TODOS →', see_all_f:'VER TODA →', contato_title:'Fale com<br>a Maia', contato_p:'Contato para clubes, imprensa e patrocinadores.', rights:'© 2026 Maia Rodrigues — Todos os direitos reservados', contato_btn:'CONTATO', today_label:'HOJE' , sec_01:'01 / SOBRE', sec_02:'02 / TRAJETÓRIA', sec_03:'03 / NA MÍDIA', sec_04:'04 / VÍDEOS', sec_05:'05 / GALERIA', sec_06:'06 / CONTATO', about_u:'SOBRE' },
-  en: { kicker:'FOOTBALLER — STRIKER', hero_p:'Two-footed, clinical finishing and rare game vision. The new generation of Brazilian attack — playing in Germany, called up by the national team.', cta_hl:'WATCH HIGHLIGHTS', traj_title_u:'CAREER', goals:'GOALS', assists:'ASSISTS', matches:'MATCHES', gpg:'GOALS / GAME', about_title:'About<br>Maia', about_p:'Two-footed, strong finishing, positioning and game reading; free-kick and penalty taker.', langs_label:'LANGUAGES', traj_title:'Career', midia_title:'In the Media', videos_title:'Videos', gal_title:'Gallery', see_all:'SEE ALL →', see_all_m:'SEE ALL →', see_all_f:'SEE ALL →', contato_title:'Contact<br>Maia', contato_p:'Contact for clubs, press and sponsors.', rights:'© 2026 Maia Rodrigues — All rights reserved', contato_btn:'CONTACT', today_label:'TODAY' , sec_01:'01 / ABOUT', sec_02:'02 / CAREER', sec_03:'03 / IN THE MEDIA', sec_04:'04 / VIDEOS', sec_05:'05 / GALLERY', sec_06:'06 / CONTACT', about_u:'ABOUT' },
-  es: { kicker:'FUTBOLISTA — DELANTERA CENTRO', hero_p:'Ambidiestra, definición precisa y una lectura de juego poco común. La nueva generación del ataque brasileño — jugando en Alemania, convocada por la selección.', cta_hl:'VER HIGHLIGHTS', traj_title_u:'TRAYECTORIA', goals:'GOLES', assists:'ASISTENCIAS', matches:'PARTIDOS', gpg:'GOLES / PARTIDO', about_title:'Sobre<br>Maia', about_p:'Ambidiestra, buena definición, buen posicionamiento, buena lectura de juego, lanzadora de faltas y penales.', langs_label:'IDIOMAS', traj_title:'Trayectoria', midia_title:'En los Medios', videos_title:'Vídeos', gal_title:'Galería', see_all:'VER TODO →', see_all_m:'VER TODO →', see_all_f:'VER TODO →', contato_title:'Habla con<br>Maia', contato_p:'Contacto para clubes, prensa y patrocinadores.', rights:'© 2026 Maia Rodrigues — Todos los derechos reservados', contato_btn:'CONTACTO', today_label:'HOY' , sec_01:'01 / SOBRE', sec_02:'02 / TRAYECTORIA', sec_03:'03 / EN LOS MEDIOS', sec_04:'04 / VÍDEOS', sec_05:'05 / GALERÍA', sec_06:'06 / CONTACTO', about_u:'SOBRE' },
-  de: { kicker:'FUSSBALLERIN — MITTELSTÜRMERIN', hero_p:'Beidfüßig, präziser Abschluss und seltenes Spielverständnis. Die neue Generation des brasilianischen Angriffs — in Deutschland am Ball, für die Nationalmannschaft nominiert.', cta_hl:'HIGHLIGHTS ANSEHEN', traj_title_u:'WERDEGANG', goals:'TORE', assists:'VORLAGEN', matches:'SPIELE', gpg:'TORE / SPIEL', about_title:'Über<br>Maia', about_p:'Beidfüßig, starker Abschluss, gutes Stellungsspiel und Spielverständnis; Freistoß- und Elfmeterschützin.', langs_label:'SPRACHEN', traj_title:'Werdegang', midia_title:'In den Medien', videos_title:'Videos', gal_title:'Galerie', see_all:'ALLE ANSEHEN →', see_all_m:'ALLE ANSEHEN →', see_all_f:'ALLE ANSEHEN →', contato_title:'Kontakt zu<br>Maia', contato_p:'Kontakt für Vereine, Presse und Sponsoren.', rights:'© 2026 Maia Rodrigues — Alle Rechte vorbehalten', contato_btn:'KONTAKT', today_label:'HEUTE' , sec_01:'01 / ÜBER', sec_02:'02 / WERDEGANG', sec_03:'03 / IN DEN MEDIEN', sec_04:'04 / VIDEOS', sec_05:'05 / GALERIE', sec_06:'06 / KONTAKT', about_u:'ÜBER' },
-  fr: { kicker:'FOOTBALLEUSE — AVANT-CENTRE', hero_p:"Ambidextre, finition précise et lecture du jeu rare. La nouvelle génération de l'attaque brésilienne — sur les terrains en Allemagne, convoquée en sélection.", cta_hl:'VOIR LES HIGHLIGHTS', traj_title_u:'PARCOURS', goals:'BUTS', assists:'PASSES DÉC.', matches:'MATCHS', gpg:'BUTS / MATCH', about_title:'À propos<br>de Maia', about_p:'Ambidextre, bonne finition, bon placement, bonne lecture du jeu ; tireuse de coups francs et de penaltys.', langs_label:'LANGUES', traj_title:'Parcours', midia_title:'Dans les Médias', videos_title:'Vidéos', gal_title:'Galerie', see_all:'TOUT VOIR →', see_all_m:'TOUT VOIR →', see_all_f:'TOUT VOIR →', contato_title:'Contacter<br>Maia', contato_p:'Contact pour clubs, presse et sponsors.', rights:'© 2026 Maia Rodrigues — Tous droits réservés', contato_btn:'CONTACT', today_label:"AUJOURD'HUI" , sec_01:'01 / À PROPOS', sec_02:'02 / PARCOURS', sec_03:'03 / DANS LES MÉDIAS', sec_04:'04 / VIDÉOS', sec_05:'05 / GALERIE', sec_06:'06 / CONTACT', about_u:'À PROPOS' },
-  it: { kicker:'CALCIATRICE — CENTRAVANTI', hero_p:"Ambidestra, finalizzazione precisa e rara lettura del gioco. La nuova generazione dell'attacco brasiliano — in campo in Germania, convocata in nazionale.", cta_hl:'GUARDA GLI HIGHLIGHTS', traj_title_u:'CARRIERA', goals:'GOL', assists:'ASSIST', matches:'PARTITE', gpg:'GOL / PARTITA', about_title:'Su<br>Maia', about_p:'Ambidestra, buona finalizzazione, buon posizionamento, buona lettura del gioco; tiratrice di punizioni e rigori.', langs_label:'LINGUE', traj_title:'Carriera', midia_title:'Nei Media', videos_title:'Video', gal_title:'Galleria', see_all:'VEDI TUTTO →', see_all_m:'VEDI TUTTO →', see_all_f:'VEDI TUTTO →', contato_title:'Contatta<br>Maia', contato_p:'Contatto per club, stampa e sponsor.', rights:'© 2026 Maia Rodrigues — Tutti i diritti riservati', contato_btn:'CONTATTO', today_label:'OGGI' , sec_01:'01 / SU MAIA', sec_02:'02 / CARRIERA', sec_03:'03 / NEI MEDIA', sec_04:'04 / VIDEO', sec_05:'05 / GALLERIA', sec_06:'06 / CONTATTO', about_u:'SU MAIA' }
+  pt: { kicker:'FUTEBOLISTA — CENTRO AVANTE', hero_p:'Ambidestra, finalização precisa e leitura de jogo rara. A nova geração do ataque brasileiro — em campo na Alemanha, convocada pela seleção.', cta_hl:'VER HIGHLIGHTS', traj_title_u:'TRAJETÓRIA', goals:'GOLS', assists:'ASSISTÊNCIAS', matches:'PARTIDAS', gpg:'GOLS / JOGO', about_title:'Sobre<br>a Maia', about_p:'Ambidestra, boa finalização, bom posicionamento, boa leitura de jogo, cobradora de faltas e pênaltis.', langs_label:'IDIOMAS', traj_title:'Trajetória', midia_title:'Na Mídia', videos_title:'Vídeos', gal_title:'Galeria', see_all:'VER TODAS →', see_all_m:'VER TODOS →', see_all_f:'VER TODA →', contato_title:'Fale com<br>a Maia', contato_p:'Contato para clubes, imprensa e patrocinadores.', rights:'© 2026 Maia Rodrigues — Todos os direitos reservados', contato_btn:'CONTATO', today_label:'HOJE' , sec_01:'01 / SOBRE', sec_02:'02 / TRAJETÓRIA', sec_03:'03 / NA MÍDIA', sec_04:'05 / VÍDEOS', sec_05:'06 / GALERIA', sec_06:'07 / CONTATO', about_u:'SOBRE', sec_social:'04 / REDES SOCIAIS', social_title:'Redes Sociais', social_empty:'Acompanhe a Maia no Instagram e no TikTok.', social_follow:'SEGUIR' },
+  en: { kicker:'FOOTBALLER — STRIKER', hero_p:'Two-footed, clinical finishing and rare game vision. The new generation of Brazilian attack — playing in Germany, called up by the national team.', cta_hl:'WATCH HIGHLIGHTS', traj_title_u:'CAREER', goals:'GOALS', assists:'ASSISTS', matches:'MATCHES', gpg:'GOALS / GAME', about_title:'About<br>Maia', about_p:'Two-footed, strong finishing, positioning and game reading; free-kick and penalty taker.', langs_label:'LANGUAGES', traj_title:'Career', midia_title:'In the Media', videos_title:'Videos', gal_title:'Gallery', see_all:'SEE ALL →', see_all_m:'SEE ALL →', see_all_f:'SEE ALL →', contato_title:'Contact<br>Maia', contato_p:'Contact for clubs, press and sponsors.', rights:'© 2026 Maia Rodrigues — All rights reserved', contato_btn:'CONTACT', today_label:'TODAY' , sec_01:'01 / ABOUT', sec_02:'02 / CAREER', sec_03:'03 / IN THE MEDIA', sec_04:'05 / VIDEOS', sec_05:'06 / GALLERY', sec_06:'07 / CONTACT', about_u:'ABOUT', sec_social:'04 / SOCIAL MEDIA', social_title:'Social Media', social_empty:'Follow Maia on Instagram and TikTok.', social_follow:'FOLLOW' },
+  es: { kicker:'FUTBOLISTA — DELANTERA CENTRO', hero_p:'Ambidiestra, definición precisa y una lectura de juego poco común. La nueva generación del ataque brasileño — jugando en Alemania, convocada por la selección.', cta_hl:'VER HIGHLIGHTS', traj_title_u:'TRAYECTORIA', goals:'GOLES', assists:'ASISTENCIAS', matches:'PARTIDOS', gpg:'GOLES / PARTIDO', about_title:'Sobre<br>Maia', about_p:'Ambidiestra, buena definición, buen posicionamiento, buena lectura de juego, lanzadora de faltas y penales.', langs_label:'IDIOMAS', traj_title:'Trayectoria', midia_title:'En los Medios', videos_title:'Vídeos', gal_title:'Galería', see_all:'VER TODO →', see_all_m:'VER TODO →', see_all_f:'VER TODO →', contato_title:'Habla con<br>Maia', contato_p:'Contacto para clubes, prensa y patrocinadores.', rights:'© 2026 Maia Rodrigues — Todos los derechos reservados', contato_btn:'CONTACTO', today_label:'HOY' , sec_01:'01 / SOBRE', sec_02:'02 / TRAYECTORIA', sec_03:'03 / EN LOS MEDIOS', sec_04:'05 / VÍDEOS', sec_05:'06 / GALERÍA', sec_06:'07 / CONTACTO', about_u:'SOBRE', sec_social:'04 / REDES SOCIALES', social_title:'Redes Sociales', social_empty:'Sigue a Maia en Instagram y TikTok.', social_follow:'SEGUIR' },
+  de: { kicker:'FUSSBALLERIN — MITTELSTÜRMERIN', hero_p:'Beidfüßig, präziser Abschluss und seltenes Spielverständnis. Die neue Generation des brasilianischen Angriffs — in Deutschland am Ball, für die Nationalmannschaft nominiert.', cta_hl:'HIGHLIGHTS ANSEHEN', traj_title_u:'WERDEGANG', goals:'TORE', assists:'VORLAGEN', matches:'SPIELE', gpg:'TORE / SPIEL', about_title:'Über<br>Maia', about_p:'Beidfüßig, starker Abschluss, gutes Stellungsspiel und Spielverständnis; Freistoß- und Elfmeterschützin.', langs_label:'SPRACHEN', traj_title:'Werdegang', midia_title:'In den Medien', videos_title:'Videos', gal_title:'Galerie', see_all:'ALLE ANSEHEN →', see_all_m:'ALLE ANSEHEN →', see_all_f:'ALLE ANSEHEN →', contato_title:'Kontakt zu<br>Maia', contato_p:'Kontakt für Vereine, Presse und Sponsoren.', rights:'© 2026 Maia Rodrigues — Alle Rechte vorbehalten', contato_btn:'KONTAKT', today_label:'HEUTE' , sec_01:'01 / ÜBER', sec_02:'02 / WERDEGANG', sec_03:'03 / IN DEN MEDIEN', sec_04:'05 / VIDEOS', sec_05:'06 / GALERIE', sec_06:'07 / KONTAKT', about_u:'ÜBER', sec_social:'04 / SOCIAL MEDIA', social_title:'Soziale Netzwerke', social_empty:'Folge Maia auf Instagram und TikTok.', social_follow:'FOLGEN' },
+  fr: { kicker:'FOOTBALLEUSE — AVANT-CENTRE', hero_p:"Ambidextre, finition précise et lecture du jeu rare. La nouvelle génération de l'attaque brésilienne — sur les terrains en Allemagne, convoquée en sélection.", cta_hl:'VOIR LES HIGHLIGHTS', traj_title_u:'PARCOURS', goals:'BUTS', assists:'PASSES DÉC.', matches:'MATCHS', gpg:'BUTS / MATCH', about_title:'À propos<br>de Maia', about_p:'Ambidextre, bonne finition, bon placement, bonne lecture du jeu ; tireuse de coups francs et de penaltys.', langs_label:'LANGUES', traj_title:'Parcours', midia_title:'Dans les Médias', videos_title:'Vidéos', gal_title:'Galerie', see_all:'TOUT VOIR →', see_all_m:'TOUT VOIR →', see_all_f:'TOUT VOIR →', contato_title:'Contacter<br>Maia', contato_p:'Contact pour clubs, presse et sponsors.', rights:'© 2026 Maia Rodrigues — Tous droits réservés', contato_btn:'CONTACT', today_label:"AUJOURD'HUI" , sec_01:'01 / À PROPOS', sec_02:'02 / PARCOURS', sec_03:'03 / DANS LES MÉDIAS', sec_04:'05 / VIDÉOS', sec_05:'06 / GALERIE', sec_06:'07 / CONTACT', about_u:'À PROPOS', sec_social:'04 / RÉSEAUX SOCIAUX', social_title:'Réseaux Sociaux', social_empty:'Suivez Maia sur Instagram et TikTok.', social_follow:'SUIVRE' },
+  it: { kicker:'CALCIATRICE — CENTRAVANTI', hero_p:"Ambidestra, finalizzazione precisa e rara lettura del gioco. La nuova generazione dell'attacco brasiliano — in campo in Germania, convocata in nazionale.", cta_hl:'GUARDA GLI HIGHLIGHTS', traj_title_u:'CARRIERA', goals:'GOL', assists:'ASSIST', matches:'PARTITE', gpg:'GOL / PARTITA', about_title:'Su<br>Maia', about_p:'Ambidestra, buona finalizzazione, buon posizionamento, buona lettura del gioco; tiratrice di punizioni e rigori.', langs_label:'LINGUE', traj_title:'Carriera', midia_title:'Nei Media', videos_title:'Video', gal_title:'Galleria', see_all:'VEDI TUTTO →', see_all_m:'VEDI TUTTO →', see_all_f:'VEDI TUTTO →', contato_title:'Contatta<br>Maia', contato_p:'Contatto per club, stampa e sponsor.', rights:'© 2026 Maia Rodrigues — Tutti i diritti riservati', contato_btn:'CONTATTO', today_label:'OGGI' , sec_01:'01 / SU MAIA', sec_02:'02 / CARRIERA', sec_03:'03 / NEI MEDIA', sec_04:'05 / VIDEO', sec_05:'06 / GALLERIA', sec_06:'07 / CONTATTO', about_u:'SU MAIA', sec_social:'04 / SOCIAL', social_title:'Social', social_empty:'Segui Maia su Instagram e TikTok.', social_follow:'SEGUI' }
 }
 
 const LBL = {
@@ -450,6 +450,82 @@ function renderMedia(news) {
   observeIn(c)
 }
 
+/* ---------------------------------------------------------- REDES SOCIAIS */
+// Carrossel horizontal com os posts sincronizados de Instagram e TikTok
+// (tabela `social_posts`, alimentada pela edge function sync-social-posts).
+const SOCIAL_LINKS = {
+  instagram: 'https://www.instagram.com/maialeonaa/',
+  tiktok: 'https://www.tiktok.com/@maiakamperrodrigues'
+}
+
+const IG_MARK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>`
+const TT_MARK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.2 1.9 3.9 4.1 4.2v3c-1.6.1-3.1-.4-4.4-1.3v6.3c0 3.5-2.8 6.3-6.3 6.3S3.6 18.7 3.6 15.2c0-3.3 2.6-6 5.9-6.2v3.1a3.1 3.1 0 1 0 2.8 3.1V3h4.2z"/></svg>`
+
+function renderSocial(posts) {
+  const c = document.getElementById('home-social-carousel')
+  if (!c) return
+  const t = I18N[lang()] || I18N.pt
+
+  if (!posts.length) {
+    c.style.overflowX = 'visible'
+    c.innerHTML = `<div data-rv style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);padding:40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px">
+      <div style="font-size:16px;color:rgba(255,255,255,.72)">${esc(t.social_empty)}</div>
+      <div style="display:flex;gap:10px">
+        <a href="${SOCIAL_LINKS.instagram}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;background:#3cc674;color:#0a1611;font-size:11.5px;font-weight:800;letter-spacing:.14em;padding:12px 20px">${IG_MARK} INSTAGRAM</a>
+        <a href="${SOCIAL_LINKS.tiktok}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;border:1px solid rgba(60,198,116,.55);color:#3cc674;font-size:11.5px;font-weight:800;letter-spacing:.14em;padding:12px 20px">${TT_MARK} TIKTOK</a>
+      </div>
+    </div>`
+    observeIn(c)
+    return
+  }
+
+  c.innerHTML = posts.map((p, i) => {
+    const mark = p.platform === 'tiktok' ? TT_MARK : IG_MARK
+    const cap = (p.caption || '').replace(/\s+/g, ' ').trim().slice(0, 90)
+    return `<a class="social-card" href="${esc(p.permalink || SOCIAL_LINKS[p.platform] || '#')}" target="_blank" rel="noopener" data-rv data-d="${i % 4}" style="flex:none;width:clamp(200px,20vw,246px);scroll-snap-align:start;position:relative;aspect-ratio:9/16;overflow:hidden;background:#061009;border:1px solid rgba(255,255,255,.09);color:#fff;display:block">
+      ${p.media_url ? `<img src="${esc(p.media_url)}" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.65,.2,1)">` : ''}
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,17,.15) 35%,rgba(10,22,17,.94) 100%);pointer-events:none"></div>
+      <div style="position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;background:rgba(10,22,17,.72);color:#3cc674;padding:6px 10px;font-size:10px;font-weight:800;letter-spacing:.12em">${mark}${p.platform === 'tiktok' ? 'TIKTOK' : 'INSTAGRAM'}</div>
+      <div style="position:absolute;left:16px;right:16px;bottom:16px;pointer-events:none">
+        ${p.posted_at ? `<div style="font-size:10.5px;font-weight:800;color:#3cc674;letter-spacing:.14em">${esc(fmtDate(p.posted_at))}</div>` : ''}
+        ${cap ? `<div style="margin-top:7px;font-size:13px;line-height:1.4;color:rgba(255,255,255,.9)">${esc(cap)}${(p.caption || '').length > 90 ? '…' : ''}</div>` : ''}
+      </div>
+    </a>`
+  }).join('')
+
+  wireSocialCarousel(c)
+  observeIn(c)
+}
+
+/* Setas, arrasto com o mouse e rolagem horizontal sem barra visível. */
+function wireSocialCarousel(c) {
+  if (c.dataset.wired) return
+  c.dataset.wired = '1'
+
+  const step = () => Math.max(c.clientWidth * 0.8, 240)
+  document.getElementById('social-prev')?.addEventListener('click', () => c.scrollBy({ left: -step(), behavior: 'smooth' }))
+  document.getElementById('social-next')?.addEventListener('click', () => c.scrollBy({ left: step(), behavior: 'smooth' }))
+
+  let down = false, startX = 0, startScroll = 0, moved = 0
+  c.addEventListener('pointerdown', e => {
+    down = true; moved = 0; startX = e.clientX; startScroll = c.scrollLeft
+    c.style.cursor = 'grabbing'
+  })
+  c.addEventListener('pointermove', e => {
+    if (!down) return
+    const d = e.clientX - startX
+    moved = Math.abs(d)
+    c.scrollLeft = startScroll - d
+  })
+  const up = () => { down = false; c.style.cursor = 'grab' }
+  c.addEventListener('pointerup', up)
+  c.addEventListener('pointerleave', up)
+  // Um arrasto não deve abrir o post que estava sob o cursor.
+  c.addEventListener('click', e => { if (moved > 6) { e.preventDefault(); moved = 0 } }, true)
+}
+
+
+
 /* ------------------------------------------------------------------ VÍDEOS */
 function renderVideos(videos) {
   const c = document.getElementById('home-videos-container')
@@ -619,7 +695,7 @@ function wireInteractions() {
 /* --------------------------------------------------------------------- go */
 async function load() {
   await previewReady
-  const [player, today, trajectory, news, videos, gallery, contact] = await Promise.all([
+  const [player, today, trajectory, news, videos, gallery, contact, social] = await Promise.all([
     // '*' e não a lista de colunas: hero_text pode ainda não existir no banco.
     supabase.from('player_stats').select('*').limit(1).maybeSingle(),
     supabase.from('today_cards').select('*').order('display_order', { ascending: true }),
@@ -630,7 +706,10 @@ async function load() {
     supabase.from('news').select('*').eq('show_on_home', true).is('deleted_at', null).order('display_order', { ascending: true }).limit(4),
     supabase.from('videos').select('*').eq('is_active', true).eq('show_on_home', true).is('deleted_at', null).order('created_at', { ascending: false }).limit(3),
     supabase.from('gallery').select('*').eq('is_active', true).is('deleted_at', null).order('display_order', { ascending: true }).limit(12),
-    supabase.from('contact_info').select('*').limit(1).maybeSingle()
+    supabase.from('contact_info').select('*').limit(1).maybeSingle(),
+    // A tabela social_posts pode ainda não existir: o catch evita derrubar o
+    // Promise.all e a seção cai no estado vazio com os links dos perfis.
+    supabase.from('social_posts').select('*').eq('hidden', false).is('deleted_at', null).order('posted_at', { ascending: false }).limit(12).then(r => r, () => ({ data: [] }))
   ])
 
   const alive = res => (res.data || []).filter(r => !r.deleted_at)
@@ -643,6 +722,7 @@ async function load() {
   renderMedia(alive(news))
   renderVideos(alive(videos))
   renderGallery(alive(gallery))
+  renderSocial(alive(social))
   renderContact(contact.data)
 }
 
