@@ -139,9 +139,18 @@ body.light .page-footer { background: #0a1611; color: #fff; border-top: 0; }
 /* ------------------------------------------------------------ responsivo */
 @media (max-width: 900px) {
   .page-nav { padding: 16px 20px; }
-  .page-hero .inner, .page-body { padding-left: 20px; padding-right: 20px; }
+  .page-hero .inner { padding: 44px 20px 48px; }
+  .page-body { padding: 44px 20px 60px; }
+  /* O piso do clamp era 56px: num título de duas palavras isso tomava
+     meia tela antes de qualquer conteúdo aparecer. */
+  .page-hero h1 { font-size: clamp(38px, 11vw, 56px); margin-top: 18px; }
+  .page-hero .rule { margin-top: 18px; }
   .grid-3 { grid-template-columns: 1fr; }
   .gal-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 150px; }
   .gal-cell.wide { grid-column: span 2; grid-row: span 2; }
-  .page-footer { padding: 26px 20px; flex-direction: column; align-items: flex-start; }
+  .news-hero { min-height: 300px; }
+  .news-hero .copy { padding: 22px; }
+  .article img { margin-bottom: 26px; }
+  .article p { font-size: 16px; }
+  .page-footer { padding: 26px 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 }
