@@ -450,6 +450,82 @@ function renderMedia(news) {
   observeIn(c)
 }
 
+/* ---------------------------------------------------------- REDES SOCIAIS */
+// Carrossel horizontal com os posts sincronizados de Instagram e TikTok
+// (tabela `social_posts`, alimentada pela edge function sync-social-posts).
+const SOCIAL_LINKS = {
+  instagram: 'https://www.instagram.com/maialeonaa/',
+  tiktok: 'https://www.tiktok.com/@maiakamperrodrigues'
+}
+
+const IG_MARK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>`
+const TT_MARK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.4 2.2 1.9 3.9 4.1 4.2v3c-1.6.1-3.1-.4-4.4-1.3v6.3c0 3.5-2.8 6.3-6.3 6.3S3.6 18.7 3.6 15.2c0-3.3 2.6-6 5.9-6.2v3.1a3.1 3.1 0 1 0 2.8 3.1V3h4.2z"/></svg>`
+
+function renderSocial(posts) {
+  const c = document.getElementById('home-social-carousel')
+  if (!c) return
+  const t = I18N[lang()] || I18N.pt
+
+  if (!posts.length) {
+    c.style.overflowX = 'visible'
+    c.innerHTML = `<div data-rv style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);padding:40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px">
+      <div style="font-size:16px;color:rgba(255,255,255,.72)">${esc(t.social_empty)}</div>
+      <div style="display:flex;gap:10px">
+        <a href="${SOCIAL_LINKS.instagram}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;background:#3cc674;color:#0a1611;font-size:11.5px;font-weight:800;letter-spacing:.14em;padding:12px 20px">${IG_MARK} INSTAGRAM</a>
+        <a href="${SOCIAL_LINKS.tiktok}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;border:1px solid rgba(60,198,116,.55);color:#3cc674;font-size:11.5px;font-weight:800;letter-spacing:.14em;padding:12px 20px">${TT_MARK} TIKTOK</a>
+      </div>
+    </div>`
+    observeIn(c)
+    return
+  }
+
+  c.innerHTML = posts.map((p, i) => {
+    const mark = p.platform === 'tiktok' ? TT_MARK : IG_MARK
+    const cap = (p.caption || '').replace(/\s+/g, ' ').trim().slice(0, 90)
+    return `<a class="social-card" href="${esc(p.permalink || SOCIAL_LINKS[p.platform] || '#')}" target="_blank" rel="noopener" data-rv data-d="${i % 4}" style="flex:none;width:clamp(200px,20vw,246px);scroll-snap-align:start;position:relative;aspect-ratio:9/16;overflow:hidden;background:#061009;border:1px solid rgba(255,255,255,.09);color:#fff;display:block">
+      ${p.media_url ? `<img src="${esc(p.media_url)}" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.65,.2,1)">` : ''}
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,17,.15) 35%,rgba(10,22,17,.94) 100%);pointer-events:none"></div>
+      <div style="position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;background:rgba(10,22,17,.72);color:#3cc674;padding:6px 10px;font-size:10px;font-weight:800;letter-spacing:.12em">${mark}${p.platform === 'tiktok' ? 'TIKTOK' : 'INSTAGRAM'}</div>
+      <div style="position:absolute;left:16px;right:16px;bottom:16px;pointer-events:none">
+        ${p.posted_at ? `<div style="font-size:10.5px;font-weight:800;color:#3cc674;letter-spacing:.14em">${esc(fmtDate(p.posted_at))}</div>` : ''}
+        ${cap ? `<div style="margin-top:7px;font-size:13px;line-height:1.4;color:rgba(255,255,255,.9)">${esc(cap)}${(p.caption || '').length > 90 ? '…' : ''}</div>` : ''}
+      </div>
+    </a>`
+  }).join('')
+
+  wireSocialCarousel(c)
+  observeIn(c)
+}
+
+/* Setas, arrasto com o mouse e rolagem horizontal sem barra visível. */
+function wireSocialCarousel(c) {
+  if (c.dataset.wired) return
+  c.dataset.wired = '1'
+
+  const step = () => Math.max(c.clientWidth * 0.8, 240)
+  document.getElementById('social-prev')?.addEventListener('click', () => c.scrollBy({ left: -step(), behavior: 'smooth' }))
+  document.getElementById('social-next')?.addEventListener('click', () => c.scrollBy({ left: step(), behavior: 'smooth' }))
+
+  let down = false, startX = 0, startScroll = 0, moved = 0
+  c.addEventListener('pointerdown', e => {
+    down = true; moved = 0; startX = e.clientX; startScroll = c.scrollLeft
+    c.style.cursor = 'grabbing'
+  })
+  c.addEventListener('pointermove', e => {
+    if (!down) return
+    const d = e.clientX - startX
+    moved = Math.abs(d)
+    c.scrollLeft = startScroll - d
+  })
+  const up = () => { down = false; c.style.cursor = 'grab' }
+  c.addEventListener('pointerup', up)
+  c.addEventListener('pointerleave', up)
+  // Um arrasto não deve abrir o post que estava sob o cursor.
+  c.addEventListener('click', e => { if (moved > 6) { e.preventDefault(); moved = 0 } }, true)
+}
+
+
+
 /* ------------------------------------------------------------------ VÍDEOS */
 function renderVideos(videos) {
   const c = document.getElementById('home-videos-container')
