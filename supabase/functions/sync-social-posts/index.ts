@@ -1,5 +1,5 @@
-// Sincroniza os posts recentes do Instagram (@maialeonaa) e do TikTok
-// (@maiakamperrodrigues) na tabela `social_posts`.
+// Sincroniza os posts recentes do Instagram (@maiakamperrodrigues) e do TikTok
+// (@maialeonaa) na tabela `social_posts`.
 //
 // Deploy:  supabase functions deploy sync-social-posts --no-verify-jwt=false
 // Secrets: IG_ACCESS_TOKEN, TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET,

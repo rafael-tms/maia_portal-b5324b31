@@ -105,7 +105,7 @@ const SocialEditor: React.FC = () => {
       </div>
 
       <p style={{ color: '#999', marginTop: 8 }}>
-        Os posts de <strong>@maialeonaa</strong> (Instagram) e <strong>@maiakamperrodrigues</strong> (TikTok)
+        Os posts de <strong>@maiakamperrodrigues</strong> (Instagram) e <strong>@maialeonaa</strong> (TikTok)
         são atualizados automaticamente a cada 6 horas. Aqui você pode ocultar ou excluir posts do carrossel da home.
       </p>
 
