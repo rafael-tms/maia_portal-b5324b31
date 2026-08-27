@@ -140,6 +140,12 @@
       nav{padding:12px 20px !important;background:rgba(10,22,17,.94) !important;backdrop-filter:blur(8px)}
       nav .brand,nav > div:first-child{mix-blend-mode:normal !important}
       .dot-nav{display:none !important}
+
+      /* A bola cruza a tela em vw: em 375px o voo vira um trecho curto com uma
+         bola de 140px ocupando quase metade da largura. Sem ela, o tremor da
+         "batida" também perde o sentido — fica só a cortina subindo. */
+      .intro-ball{display:none !important}
+      #intro{animation:curtainUp .85s 2.1s cubic-bezier(.75,0,.25,1) forwards !important}
       .pad-x{padding-left:22px !important;padding-right:22px !important}
       .grid-2{grid-template-columns:1fr !important;gap:36px !important}
       .grid-3{grid-template-columns:1fr !important}
@@ -159,10 +165,12 @@
       #hero{height:auto !important;min-height:100vh}
 
       /* 4 colunas em 375px davam ~82px por número, e três ainda perdiam 40px
-         de recuo — os números não cabiam. */
+         de recuo — os números não cabiam. Em 2x2 o conteúdo continuava colado
+         à esquerda de cada célula, deixando um vazio à direita do número;
+         centralizado, os quatro blocos ocupam a largura toda. */
       .hero-stats{grid-template-columns:repeat(2,1fr) !important}
-      .hero-stat{padding:14px 0 14px 16px !important;border-right:0 !important;border-top:1px solid rgba(255,255,255,.14)}
-      .hero-stat:nth-child(odd){padding-left:0 !important;border-right:1px solid rgba(255,255,255,.14) !important}
+      .hero-stat{padding:16px 8px !important;text-align:center;border-right:0 !important;border-top:1px solid rgba(255,255,255,.14)}
+      .hero-stat:nth-child(odd){border-right:1px solid rgba(255,255,255,.14) !important}
       .hero-stat:nth-child(-n+2){border-top:0}
 
       /* Tiras de 34vw × 44vh viravam ~127×357px: altas e estreitas demais. */
@@ -174,6 +182,11 @@
          e a centralização empurrava o topo para baixo da nav fixa — a citação
          do contato ficava atrás dela. Alinhar ao topo resolve. */
       [data-sec]{align-items:flex-start !important}
+      /* #hero e #contato são os únicos flex em coluna: neles align-items é o
+         eixo horizontal, e flex-start encolhia os filhos até a largura do
+         conteúdo — a faixa de estatísticas ficava com 292px de 375 e presa à
+         esquerda. O eixo vertical desses dois é justify-content. */
+      #hero,#contato{align-items:stretch !important}
       #contato{justify-content:flex-start !important}
 
       /* Seções curtas (galeria) não precisam ocupar uma tela inteira aqui:
@@ -192,7 +205,7 @@
 <div id="snap-root" data-scroll style="height:100vh;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth;background:#eef2ec">
 
   <div id="intro" style="position:fixed;inset:0;z-index:300;background:#0a1611;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;animation:shake .5s 1.18s linear,curtainUp .85s 2.1s cubic-bezier(.75,0,.25,1) forwards;pointer-events:none;overflow:hidden">
-    <div style="position:absolute;top:50%;left:50%;margin:-70px 0 0 -70px;width:140px;height:140px;animation:ballFly 1.25s .1s cubic-bezier(.3,.1,.6,1) both;z-index:2">
+    <div class="intro-ball" style="position:absolute;top:50%;left:50%;margin:-70px 0 0 -70px;width:140px;height:140px;animation:ballFly 1.25s .1s cubic-bezier(.3,.1,.6,1) both;z-index:2">
       <img src="images/bola-real.png" alt="" style="width:100%;height:100%;object-fit:contain;animation:ballSpin 1.35s .1s linear both;filter:drop-shadow(0 18px 30px rgba(0,0,0,.5))">
     </div>
     <div class="uib-load"><div class="uib-dot"></div><div class="uib-dot"></div><div class="uib-dot"></div><div class="uib-dot"></div></div>
