@@ -69,8 +69,6 @@
     .btn-white:hover{background:#3cc674 !important;color:#0a1611 !important}
     .btn-ghost:hover{border-color:#3cc674 !important;color:#3cc674 !important}
     .lang-opt:hover{background:rgba(60,198,116,.14)}
-    .traj-row{transition:background .35s,transform .35s}
-    .traj-row:hover{background:rgba(23,114,74,.04);transform:translateX(12px)}
     .news-card:hover{background:rgba(60,198,116,.09) !important;border-color:rgba(60,198,116,.4) !important}
     .video-card:hover{border-color:rgba(60,198,116,.4) !important}
     .video-card:hover .play-btn{transform:translate(-50%,-50%) scale(1.15)}
@@ -136,7 +134,11 @@
     @media (max-height:680px){#hero-ticker{display:none !important}}
 
     @media (max-width:900px){
-      nav{padding:16px 20px !important}
+      /* A nav é fixa e o conteúdo passa por baixo. No desktop o degradê some
+         sobre o hero escuro; no celular, em seção clara, a marca ficava
+         ilegível e colidia com o texto. Fundo opaco resolve os dois. */
+      nav{padding:12px 20px !important;background:rgba(10,22,17,.94) !important;backdrop-filter:blur(8px)}
+      nav .brand,nav > div:first-child{mix-blend-mode:normal !important}
       .dot-nav{display:none !important}
       .pad-x{padding-left:22px !important;padding-right:22px !important}
       .grid-2{grid-template-columns:1fr !important;gap:36px !important}
@@ -145,9 +147,43 @@
       .hero-grid{grid-template-columns:1fr !important}
       #hero-photo{display:none !important}
       .sec-title{font-size:38px !important}
-      .traj-row{grid-template-columns:56px 1fr !important;gap:16px !important}
-      .traj-period{grid-column:1/-1}
-      .traj-stats{grid-column:1/-1;justify-content:flex-start !important;text-align:left !important;gap:28px !important}
+
+      /* No celular as seções passam de uma tela (o grid vira coluna única),
+         então o snap obrigatório briga com a rolagem do dedo. O !important é
+         necessário: scroll-snap-type está inline no #snap-root. */
+      #snap-root{scroll-snap-type:none !important}
+      [data-sec]{scroll-snap-align:none !important}
+
+      /* O hero tem altura fixa no desktop; aqui precisa crescer, senão o
+         conteúdo abaixo das estatísticas fica cortado. */
+      #hero{height:auto !important;min-height:100vh}
+
+      /* 4 colunas em 375px davam ~82px por número, e três ainda perdiam 40px
+         de recuo — os números não cabiam. */
+      .hero-stats{grid-template-columns:repeat(2,1fr) !important}
+      .hero-stat{padding:14px 0 14px 16px !important;border-right:0 !important;border-top:1px solid rgba(255,255,255,.14)}
+      .hero-stat:nth-child(odd){padding-left:0 !important;border-right:1px solid rgba(255,255,255,.14) !important}
+      .hero-stat:nth-child(-n+2){border-top:0}
+
+      /* Tiras de 34vw × 44vh viravam ~127×357px: altas e estreitas demais. */
+      #home-gallery-strip > div{width:62vw !important;height:26vh !important}
+
+      .quote{font-size:23px !important;line-height:1.35 !important}
+
+      /* As seções centralizam o conteúdo. No celular elas crescem além da tela
+         e a centralização empurrava o topo para baixo da nav fixa — a citação
+         do contato ficava atrás dela. Alinhar ao topo resolve. */
+      [data-sec]{align-items:flex-start !important}
+      #contato{justify-content:flex-start !important}
+
+      /* Seções curtas (galeria) não precisam ocupar uma tela inteira aqui:
+         forçar 100vh só criava vazio. O padding próprio já dá o respiro. */
+      [data-sec]:not(#hero){min-height:0 !important}
+
+      /* SOBRE / TRAJETÓRIA / CONTATO + "By: XBC4IT" não cabem em 375px. */
+      .foot-nav{flex-wrap:wrap;gap:16px !important;row-gap:10px}
+
+      .traj-stats{justify-content:flex-start !important}
     }
   </style>
 </head>
@@ -231,11 +267,11 @@
     </div>
 
     <div style="position:relative;border-top:1px solid rgba(255,255,255,.14)">
-      <div class="pad-x" style="max-width:1360px;margin:0 auto;padding:0 56px;display:grid;grid-template-columns:repeat(4,1fr)">
-        <div style="padding:clamp(14px,2.6vh,26px) 0;border-right:1px solid rgba(255,255,255,.14)"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-goals" data-count="0">0</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="goals">GOLS</div></div>
-        <div style="padding:clamp(14px,2.6vh,26px) 0 clamp(14px,2.6vh,26px) 40px;border-right:1px solid rgba(255,255,255,.14)"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-assists" data-count="0">0</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="assists">ASSISTÊNCIAS</div></div>
-        <div style="padding:clamp(14px,2.6vh,26px) 0 clamp(14px,2.6vh,26px) 40px;border-right:1px solid rgba(255,255,255,.14)"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-matches" data-count="0">0</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="matches">PARTIDAS</div></div>
-        <div style="padding:clamp(14px,2.6vh,26px) 0 clamp(14px,2.6vh,26px) 40px"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-goals-per-game" data-count="0" data-dec="2">0,00</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="gpg">GOLS / JOGO</div></div>
+      <div class="pad-x hero-stats" style="max-width:1360px;margin:0 auto;padding:0 56px;display:grid;grid-template-columns:repeat(4,1fr)">
+        <div class="hero-stat" style="padding:clamp(14px,2.6vh,26px) 0;border-right:1px solid rgba(255,255,255,.14)"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-goals" data-count="0">0</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="goals">GOLS</div></div>
+        <div class="hero-stat" style="padding:clamp(14px,2.6vh,26px) 0 clamp(14px,2.6vh,26px) 40px;border-right:1px solid rgba(255,255,255,.14)"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-assists" data-count="0">0</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="assists">ASSISTÊNCIAS</div></div>
+        <div class="hero-stat" style="padding:clamp(14px,2.6vh,26px) 0 clamp(14px,2.6vh,26px) 40px;border-right:1px solid rgba(255,255,255,.14)"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-matches" data-count="0">0</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="matches">PARTIDAS</div></div>
+        <div class="hero-stat" style="padding:clamp(14px,2.6vh,26px) 0 clamp(14px,2.6vh,26px) 40px"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5vh,46px);line-height:1"><span id="stat-goals-per-game" data-count="0" data-dec="2">0,00</span></div><div style="font-size:11px;font-weight:700;letter-spacing:.22em;color:#3cc674;margin-top:8px" data-i18n="gpg">GOLS / JOGO</div></div>
       </div>
     </div>
   </section>
@@ -340,7 +376,7 @@
   <section id="contato" data-sec="contato" style="min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;background:#eef2ec;position:relative;overflow:hidden">
     <div style="position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(23,114,74,.10),transparent 70%);filter:blur(50px);top:-180px;left:50%;margin-left:-300px;animation:drift 22s ease-in-out infinite;pointer-events:none"></div>
     <div class="pad-x" style="max-width:1360px;width:100%;margin:0 auto;padding:90px 56px 0;box-sizing:border-box">
-      <div style="text-align:center;max-width:900px;margin:0 auto;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:34px;line-height:1.3;letter-spacing:-.01em;color:#101c14">
+      <div style="text-align:center;max-width:900px;margin:0 auto;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:34px;line-height:1.3;letter-spacing:-.01em;color:#101c14" class="quote">
         <span data-rv style="display:inline-block">&ldquo;Com</span> <span data-rv data-d="1" style="display:inline-block;color:#17724a">determinação</span><span data-rv data-d="1" style="display:inline-block">,</span> <span data-rv data-d="2" style="display:inline-block">trilho meu caminho</span> <span data-rv data-d="3" style="display:inline-block">no campo,</span> <span data-rv data-d="4" style="display:inline-block">sempre em busca</span> <span data-rv data-d="5" style="display:inline-block">de superação.&rdquo;</span>
       </div>
       <div class="grid-2" style="border-top:1px solid rgba(16,28,20,.14);margin-top:60px;padding-top:56px;display:grid;grid-template-columns:1.3fr 1fr;gap:60px;align-items:center">
@@ -360,7 +396,7 @@
           <a href="/admin.html" title="Área Administrativa" class="admin-link" style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12241a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></a>
           <div data-i18n="rights">© 2026 Maia Rodrigues — Todos os direitos reservados</div>
         </div>
-        <div style="display:flex;align-items:center;gap:26px;font-weight:700;letter-spacing:.06em">
+        <div class="foot-nav" style="display:flex;align-items:center;gap:26px;font-weight:700;letter-spacing:.06em">
           <a href="#sobre" style="color:rgba(16,28,20,.45)" data-i18n="about_u">SOBRE</a><a href="#trajetoria" style="color:rgba(16,28,20,.45)" data-i18n="traj_title_u">TRAJETÓRIA</a><a href="#contato" style="color:rgba(16,28,20,.45)" data-i18n="contato_btn">CONTATO</a>
           <a href="https://www.xbc4it.com" target="_blank" rel="noopener" title="Desenvolvido por XBC4IT" class="xbc-link" style="display:flex;align-items:center;gap:3px;letter-spacing:.06em"><span style="font-weight:400">By:</span><img src="uploads/logo-xbc4it-preto-813b2010.png" alt="XBC4IT" style="height:18px;width:auto"></a>
         </div>
