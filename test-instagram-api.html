@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Instagram API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0a1611;
+            color: #fff;
+        }
+        
+        h1 {
+            color: #3cc674;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .success {
+            background: rgba(60, 198, 116, 0.2);
+            border: 1px solid #3cc674;
+            color: #3cc674;
+        }
+        
+        .error {
+            background: rgba(255, 77, 77, 0.2);
+            border: 1px solid #ff4d4d;
+            color: #ff4d4d;
+        }
+        
+        .loading {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+        }
+        
+        button {
+            background: #3cc674;
+            color: #0a1611;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background: #7fe3ad;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .post-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .post-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+        
+        .post-content {
+            padding: 15px;
+        }
+        
+        .post-type {
+            display: inline-block;
+            background: #3cc674;
+            color: #0a1611;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .post-caption {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+        
+        .post-date {
+            font-size: 12px;
+            color: #3cc674;
+            font-weight: 600;
+        }
+        
+        .post-link {
+            color: #3cc674;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .post-link:hover {
+            text-decoration: underline;
+        }
+        
+        pre {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        
+        .info-box {
+            background: rgba(60, 198, 116, 0.1);
+            border-left: 4px solid #3cc674;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #3cc674;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste da API do Instagram</h1>
+    
+    <div class="info-box">
+        <h3>Instruções</h3>
+        <p>Este arquivo testa a integração com a API do Instagram.</p>
+        <p>Clique no botão abaixo para buscar os últimos posts do Instagram.</p>
+        <p><strong>Nota:</strong> Certifique-se de que o <code>INSTAGRAM_LONG_LIVED_TOKEN</code> está configurado no arquivo <code>.env</code></p>
+    </div>
+    
+    <button id="testBtn" onclick="testAPI()">🚀 Buscar Posts do Instagram</button>
+    <button id="rawBtn" onclick="showRawData()" disabled>📄 Ver JSON Bruto</button>
+    
+    <div id="status"></div>
+    <div id="results"></div>
+    
+    <script>
+        let postsData = null;
+        
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            const testBtn = document.getElementById('testBtn');
+            const rawBtn = document.getElementById('rawBtn');
+            
+            testBtn.disabled = true;
+            rawBtn.disabled = true;
+            statusDiv.innerHTML = '<div class="status loading">⏳ Buscando posts do Instagram...</div>';
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/instagram-media');
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                postsData = data;
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                const posts = data.posts || [];
+                
+                if (posts.length === 0) {
+                    statusDiv.innerHTML = '<div class="status error">⚠️ Nenhum post encontrado</div>';
+                    return;
+                }
+                
+                statusDiv.innerHTML = `<div class="status success">✅ ${posts.length} post(s) encontrado(s) com sucesso!</div>`;
+                rawBtn.disabled = false;
+                
+                // Renderizar os posts
+                resultsDiv.innerHTML = `
+                    <h2>Posts Encontrados</h2>
+                    <div class="posts-grid">
+                        ${posts.map(post => `
+                            <div class="post-card">
+                                ${post.media_url ? `
+                                    <img src="${post.media_url}" 
+                                         alt="${post.caption ? post.caption.substring(0, 50) : 'Post do Instagram'}"
+                                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'300\\'%3E%3Crect fill=\\'%23333\\' width=\\'300\\' height=\\'300\\'/%3E%3Ctext fill=\\'%23666\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3EImagem indisponível%3C/text%3E%3C/svg%3E'">
+                                ` : '<div style="width:100%;aspect-ratio:1;background:#333;display:flex;align-items:center;justify-content:center;color:#666;">Sem imagem</div>'}
+                                <div class="post-content">
+                                    <span class="post-type">${post.media_type || 'IMAGE'}</span>
+                                    ${post.timestamp ? `<div class="post-date">${new Date(post.timestamp).toLocaleDateString('pt-BR')}</div>` : ''}
+                                    ${post.caption ? `<div class="post-caption">${post.caption.substring(0, 150)}${post.caption.length > 150 ? '...' : ''}</div>` : ''}
+                                    ${post.permalink ? `<a href="${post.permalink}" target="_blank" rel="noopener" class="post-link">Ver no Instagram →</a>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Erro: ${error.message}</div>`;
+                
+                // Mostrar dicas de solução
+                resultsDiv.innerHTML = `
+                    <div class="info-box">
+                        <h3>Possíveis Causas do Erro:</h3>
+                        <ul>
+                            <li>Token do Instagram não configurado ou inválido</li>
+                            <li>Token expirado (tokens Long-Lived duram 60 dias)</li>
+                            <li>Conta Instagram não vinculada a uma Página do Facebook</li>
+                            <li>Permissões insuficientes no token</li>
+                            <li>API do Facebook/Instagram temporariamente indisponível</li>
+                        </ul>
+                        <h3>Como Resolver:</h3>
+                        <ol>
+                            <li>Verifique se o arquivo <code>.env</code> contém <code>INSTAGRAM_LONG_LIVED_TOKEN</code></li>
+                            <li>Confirme que o token ainda é válido</li>
+                            <li>Verifique se a conta Instagram é do tipo Business</li>
+                            <li>Confira os logs do servidor para mais detalhes</li>
+                        </ol>
+                    </div>
+                `;
+            } finally {
+                testBtn.disabled = false;
+            }
+        }
+        
+        function showRawData() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!postsData) {
+                alert('Nenhum dado disponível. Busque os posts primeiro.');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <h2>JSON Bruto da Resposta</h2>
+                <pre>${JSON.stringify(postsData, null, 2)}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>

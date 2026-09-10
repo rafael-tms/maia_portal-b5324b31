@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - TikTok API</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0a1611;
+            color: #fff;
+        }
+        
+        h1 {
+            color: #FF0050;
+        }
+        
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .success {
+            background: rgba(60, 198, 116, 0.2);
+            border: 1px solid #3cc674;
+            color: #3cc674;
+        }
+        
+        .error {
+            background: rgba(255, 77, 77, 0.2);
+            border: 1px solid #ff4d4d;
+            color: #ff4d4d;
+        }
+        
+        .loading {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+        }
+        
+        button {
+            background: #FF0050;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background: #ff3378;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .video-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .video-card img {
+            width: 100%;
+            aspect-ratio: 9/16;
+            object-fit: cover;
+        }
+        
+        .video-content {
+            padding: 15px;
+        }
+        
+        .video-duration {
+            display: inline-block;
+            background: #FF0050;
+            color: #fff;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .video-description {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+        
+        .video-date {
+            font-size: 12px;
+            color: #FF0050;
+            font-weight: 600;
+        }
+        
+        .video-link {
+            color: #FF0050;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .video-link:hover {
+            text-decoration: underline;
+        }
+        
+        pre {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        
+        .info-box {
+            background: rgba(255, 0, 80, 0.1);
+            border-left: 4px solid #FF0050;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #FF0050;
+        }
+        
+        .env-check {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .env-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .env-item:last-child {
+            border-bottom: none;
+        }
+        
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .badge-success {
+            background: #3cc674;
+            color: #0a1611;
+        }
+        
+        .badge-error {
+            background: #ff4d4d;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Teste da API do TikTok</h1>
+    
+    <div class="info-box">
+        <h3>Instruções</h3>
+        <p>Este arquivo testa a integração com a API do TikTok.</p>
+        <p>Clique no botão abaixo para buscar os últimos vídeos do TikTok da @maialeonaa.</p>
+        <p><strong>Nota:</strong> Certifique-se de que o <code>TIKTOK_REFRESH_TOKEN</code> está configurado no arquivo <code>.env</code> ou nas variáveis do Vercel</p>
+    </div>
+    
+    <div class="env-check">
+        <h3>Status das Variáveis (Cliente - apenas visualização)</h3>
+        <p style="font-size: 12px; color: rgba(255,255,255,0.6);">As variáveis reais são verificadas no servidor durante a chamada da API</p>
+    </div>
+    
+    <button id="testBtn" onclick="testAPI()">🚀 Buscar Vídeos do TikTok</button>
+    <button id="rawBtn" onclick="showRawData()" disabled>📄 Ver JSON Bruto</button>
+    
+    <div id="status"></div>
+    <div id="results"></div>
+    
+    <script>
+        let videosData = null;
+        
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            const testBtn = document.getElementById('testBtn');
+            const rawBtn = document.getElementById('rawBtn');
+            
+            testBtn.disabled = true;
+            rawBtn.disabled = true;
+            statusDiv.innerHTML = '<div class="status loading">⏳ Buscando vídeos do TikTok...</div>';
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch('/api/tiktok-media');
+                const elapsed = Date.now() - startTime;
+                
+                console.log('Resposta recebida:', response.status, response.statusText);
+                console.log('Tempo de resposta:', elapsed + 'ms');
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || errorData.error || `Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                videosData = data;
+                
+                if (data.error) {
+                    throw new Error(data.details || data.error);
+                }
+                
+                const videos = data.videos || [];
+                
+                if (videos.length === 0) {
+                    statusDiv.innerHTML = '<div class="status error">⚠️ Nenhum vídeo encontrado</div>';
+                    return;
+                }
+                
+                statusDiv.innerHTML = `<div class="status success">✅ ${videos.length} vídeo(s) encontrado(s) com sucesso! (${elapsed}ms)</div>`;
+                rawBtn.disabled = false;
+                
+                // Renderizar os vídeos
+                resultsDiv.innerHTML = `
+                    <h2>Vídeos Encontrados</h2>
+                    <div class="videos-grid">
+                        ${videos.map(video => `
+                            <div class="video-card">
+                                ${video.cover_url ? `
+                                    <img src="${video.cover_url}" 
+                                         alt="${video.description || video.title || 'Vídeo do TikTok'}"
+                                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'533\\'%3E%3Crect fill=\\'%23333\\' width=\\'300\\' height=\\'533\\'/%3E%3Ctext fill=\\'%23666\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\'%3EImagem indisponível%3C/text%3E%3C/svg%3E'">
+                                ` : '<div style="width:100%;aspect-ratio:9/16;background:#333;display:flex;align-items:center;justify-content:center;color:#666;">Sem thumbnail</div>'}
+                                <div class="video-content">
+                                    ${video.duration ? `<span class="video-duration">${Math.floor(video.duration / 60)}:${String(Math.floor(video.duration % 60)).padStart(2, '0')}</span>` : ''}
+                                    ${video.created_at ? `<div class="video-date">${new Date(video.created_at).toLocaleDateString('pt-BR')}</div>` : ''}
+                                    ${video.title ? `<div style="font-weight:700;margin:8px 0;">${video.title}</div>` : ''}
+                                    ${video.description ? `<div class="video-description">${video.description.substring(0, 100)}${video.description.length > 100 ? '...' : ''}</div>` : ''}
+                                    ${video.embed_link ? `<a href="${video.embed_link}" target="_blank" rel="noopener" class="video-link">Ver no TikTok →</a>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Erro: ${error.message}</div>`;
+                
+                // Mostrar dicas de solução
+                resultsDiv.innerHTML = `
+                    <div class="info-box">
+                        <h3>Possíveis Causas do Erro:</h3>
+                        <ul>
+                            <li><strong>Token expirado ou inválido</strong>: Refresh tokens do TikTok podem expirar</li>
+                            <li><strong>Credenciais não configuradas</strong>: Verifique TIKTOK_REFRESH_TOKEN, TIKTOK_CLIENT_KEY e TIKTOK_CLIENT_SECRET</li>
+                            <li><strong>Permissões insuficientes</strong>: O app TikTok precisa ter as permissões corretas</li>
+                            <li><strong>Conta não autorizada</strong>: A conta @maialeonaa precisa autorizar o app</li>
+                            <li><strong>API do TikTok temporariamente indisponível</strong></li>
+                        </ul>
+                        <h3>Como Resolver:</h3>
+                        <ol>
+                            <li>Verifique o console do navegador (F12) para logs detalhados</li>
+                            <li>Verifique o terminal onde <code>vercel dev</code> está rodando</li>
+                            <li>Se o token expirou, gere um novo via fluxo OAuth do TikTok</li>
+                            <li>Verifique se as variáveis de ambiente estão corretas no <code>.env</code></li>
+                            <li>Tente rodar <code>vercel env pull</code> se estiver usando variáveis do Vercel</li>
+                        </ol>
+                        <h3>Logs do Servidor:</h3>
+                        <p>Verifique o terminal onde <code>vercel dev</code> está rodando para ver os logs detalhados da API começando com <code>[TikTok API]</code></p>
+                    </div>
+                `;
+            } finally {
+                testBtn.disabled = false;
+            }
+        }
+        
+        function showRawData() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!videosData) {
+                alert('Nenhum dado disponível. Busque os vídeos primeiro.');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <h2>JSON Bruto da Resposta</h2>
+                <pre>${JSON.stringify(videosData, null, 2)}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>
