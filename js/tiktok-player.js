@@ -11,52 +11,34 @@ export function initTikTokPlayers(container) {
   const cards = container.querySelectorAll('.tiktok-card');
   
   cards.forEach(card => {
-    // Remove href para não abrir em nova aba
-    card.removeAttribute('href');
-    card.removeAttribute('target');
-    card.removeAttribute('rel');
-    card.style.cursor = 'pointer';
-    
-    // Extrai dados do card
-    const embedLink = card.querySelector('img')?.alt || card.textContent;
-    const videoData = extractVideoData(card);
+    const embedLink = card.getAttribute('data-embed-link');
+    const description = card.getAttribute('data-description');
     
     card.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       
-      if (videoData.embedLink) {
-        openTikTokModal(videoData);
+      if (embedLink && embedLink !== '' && embedLink !== 'https://www.tiktok.com/@maialeonaa') {
+        console.log('[TikTok Player] Abrindo modal para:', embedLink);
+        openTikTokModal({ embedLink, description });
       } else {
-        console.warn('[TikTok Player] Vídeo sem link de embed');
-        // Fallback: tenta abrir o perfil
+        console.warn('[TikTok Player] Vídeo sem link de embed válido');
+        // Fallback: abre o perfil
         window.open('https://www.tiktok.com/@maialeonaa', '_blank', 'noopener,noreferrer');
       }
     });
   });
+  
+  console.log('[TikTok Player] Inicializado com', cards.length, 'vídeos');
 }
 
 /**
- * Extrai dados do vídeo do card HTML
- */
-function extractVideoData(card) {
-  // Busca o link nas âncoras filhas
-  const link = card.href || card.querySelector('a')?.href || '';
-  
-  // Extrai descrição
-  const descEl = card.querySelector('[style*="font-weight: 600"]');
-  const description = descEl?.textContent || '';
-  
-  return {
-    embedLink: link,
-    description: description.replace('...', '').trim()
-  };
-}
-
-/**
- * Abre modal com vídeo do TikTok embarcado
+ * Abre modal com vídeo do TikTok embarcado via iframe
  */
 export function openTikTokModal(videoData) {
   const { embedLink, description } = videoData;
+  
+  console.log('[TikTok Player] Abrindo modal para vídeo:', embedLink);
   
   // Remove modal existente se houver
   const existingModal = document.getElementById('tiktok-modal');
@@ -76,6 +58,10 @@ export function openTikTokModal(videoData) {
   }
   
   const videoId = videoIdMatch[1];
+  console.log('[TikTok Player] ID do vídeo:', videoId);
+  
+  // URL do iframe embed do TikTok (formato similar ao YouTube)
+  const iframeUrl = `https://www.tiktok.com/embed/v2/${videoId}`;
   
   // Cria o modal
   const modal = document.createElement('div');
@@ -115,30 +101,45 @@ export function openTikTokModal(videoData) {
         background: rgba(255,255,255,0.2) !important;
         transform: scale(1.1);
       }
+      .tiktok-iframe-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        aspect-ratio: 9/16;
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .tiktok-iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
     </style>
-    <div style="position: relative; max-width: 605px; width: 100%; max-height: 90vh; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8);" class="tiktok-modal-content">
-      <button id="close-tiktok-modal" style="position: absolute; top: 10px; right: 10px; z-index: 10000; background: rgba(0,0,0,0.8); color: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" aria-label="Fechar">
+    <div style="position: relative;" class="tiktok-modal-content">
+      <button id="close-tiktok-modal" style="position: absolute; top: -50px; right: 0; z-index: 10001; background: rgba(0,0,0,0.8); color: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" aria-label="Fechar">
         ×
       </button>
-      <blockquote 
-        class="tiktok-embed" 
-        cite="${embedLink}" 
-        data-video-id="${videoId}"
-        style="max-width: 605px; min-width: 325px; margin: 0;">
-        <section>
-          <a target="_blank" rel="noopener noreferrer" href="${embedLink}">
-            ${description || 'Ver vídeo no TikTok'}
-          </a>
-        </section>
-      </blockquote>
+      <div class="tiktok-iframe-wrapper">
+        <iframe 
+          class="tiktok-iframe"
+          src="${iframeUrl}"
+          allowfullscreen
+          scrolling="no"
+          allow="encrypted-media; autoplay; fullscreen;"
+          title="${description || 'Vídeo do TikTok'}"
+        ></iframe>
+      </div>
     </div>
   `;
   
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
   
-  // Carrega o script de embed do TikTok
-  loadTikTokEmbedScript();
+  console.log('[TikTok Player] Modal criado com iframe:', iframeUrl);
   
   // Fecha o modal
   const closeModal = () => {
@@ -169,19 +170,9 @@ export function openTikTokModal(videoData) {
 }
 
 /**
- * Carrega o script de embed do TikTok
+ * Carrega o script de embed do TikTok (não mais necessário com iframe)
  */
-function loadTikTokEmbedScript() {
-  if (!document.getElementById('tiktok-embed-script')) {
-    const script = document.createElement('script');
-    script.id = 'tiktok-embed-script';
-    script.async = true;
-    script.src = 'https://www.tiktok.com/embed.js';
-    document.body.appendChild(script);
-  } else {
-    // Se o script já existe, força re-render dos embeds
-    if (window.tiktokEmbed && typeof window.tiktokEmbed === 'function') {
-      window.tiktokEmbed();
-    }
-  }
+function loadTikTokEmbedScript(callback) {
+  // Mantido para compatibilidade, mas iframe não precisa
+  if (callback) callback();
 }

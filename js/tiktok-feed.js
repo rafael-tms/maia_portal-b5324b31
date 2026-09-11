@@ -1,8 +1,6 @@
 // tiktok-feed.js
 // Busca e exibe os vídeos do TikTok na seção de Redes Sociais
 
-import { initTikTokPlayers } from './tiktok-player.js';
-
 /**
  * Dados mockados para desenvolvimento local
  */
@@ -105,16 +103,24 @@ export async function fetchTikTokVideos() {
     }
     
     // Retorna os vídeos formatados
-    const videos = (data.videos || []).map(video => ({
-      id: video.id,
-      title: video.title || '',
-      description: video.description || '',
-      cover_url: video.cover_url,
-      embed_link: video.embed_link,
-      duration: video.duration,
-      created_at: video.created_at,
-      platform: 'tiktok'
-    }));
+    const videos = (data.videos || []).map(video => {
+      console.log('[TikTok Feed] Vídeo recebido:', {
+        id: video.id,
+        embed_link: video.embed_link,
+        cover_url: video.cover_url
+      });
+      
+      return {
+        id: video.id,
+        title: video.title || '',
+        description: video.description || '',
+        cover_url: video.cover_url,
+        embed_link: video.embed_link,
+        duration: video.duration,
+        created_at: video.created_at,
+        platform: 'tiktok'
+      };
+    });
     
     if (videos.length === 0) {
       console.warn('[TikTok Feed] A conta @maialeonaa não possui vídeos públicos ou visíveis para o app.');
@@ -215,14 +221,15 @@ export function renderTikTokVideos(videos, container) {
     const date = formatDate(video.created_at);
     const duration = formatDuration(video.duration);
     
+    // Usa o embed_link diretamente como data-src
+    const videoSrc = video.embed_link || '';
+    
     return `
       <div class="video-card tiktok-card"
          data-rv 
          data-d="${index}"
-         data-embed-link="${video.embed_link || ''}"
-         data-description="${shortDescription}"
-         style="background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); transition: border-color .4s; display: block; text-decoration: none; color: inherit; cursor: pointer;">
-        <div style="position: relative; padding-bottom: 177.78%; background: #061009; overflow: hidden;">
+         style="background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); transition: border-color .4s; display: block; color: inherit;">
+        <div class="video-slot" data-src="${videoSrc}" style="position: relative; padding-bottom: 177.78%; background: #061009; overflow: hidden; cursor: pointer;">
           ${video.cover_url ? `
             <img src="${video.cover_url}" 
                  alt="${shortDescription || 'Vídeo do TikTok'}" 
@@ -232,7 +239,7 @@ export function renderTikTokVideos(videos, container) {
           <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,22,17,0) 50%, rgba(10,22,17,.92) 100%);"></div>
           
           <!-- Badge TikTok -->
-          <div style="position: absolute; top: 14px; left: 14px; background: rgba(0,0,0,.85); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .12em; padding: 6px 10px; display: flex; align-items: center; gap: 6px; border-radius: 4px;">
+          <div style="position: absolute; top: 14px; left: 14px; background: rgba(0,0,0,.85); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .12em; padding: 6px 10px; display: flex; align-items: center; gap: 6px; border-radius: 4px; pointer-events: none;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#FF0050">
               <path d="M16.5 3c.4 2.2 1.9 3.9 4.1 4.2v3c-1.6.1-3.1-.4-4.4-1.3v6.3c0 3.5-2.8 6.3-6.3 6.3S3.6 18.7 3.6 15.2c0-3.5 2.8-6.3 6.3-6.3.3 0 .6 0 .9.1v3.1c-.3 0-.6-.1-.9-.1-1.8 0-3.2 1.4-3.2 3.2s1.4 3.2 3.2 3.2c1.8 0 3.3-1.4 3.3-3.1V3h3.3z"/>
             </svg>
@@ -240,18 +247,18 @@ export function renderTikTokVideos(videos, container) {
           </div>
           
           ${duration ? `
-            <div style="position: absolute; bottom: 16px; right: 16px; background: rgba(0,0,0,.8); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px;">
+            <div style="position: absolute; bottom: 16px; right: 16px; background: rgba(0,0,0,.8); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; pointer-events: none;">
               ${duration}
             </div>
           ` : ''}
           
           <!-- Play Icon -->
-          <div class="tiktok-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; background: rgba(255,0,80,.9); display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: transform .35s;">
+          <div class="play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; background: rgba(255,0,80,.9); display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: transform .35s; pointer-events: none;">
             <div style="width: 0; height: 0; border-left: 14px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; margin-left: 3px;"></div>
           </div>
         </div>
         
-        <div style="padding: 18px 22px;">
+        <div style="padding: 18px 22px; pointer-events: none;">
           ${date ? `
             <div style="font-size: 11px; font-weight: 800; color: #FF0050; letter-spacing: .14em;">
               ${date}
@@ -270,7 +277,4 @@ export function renderTikTokVideos(videos, container) {
       </div>
     `;
   }).join('');
-  
-  // Inicializa os players
-  initTikTokPlayers(container);
 }

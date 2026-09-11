@@ -172,6 +172,21 @@ export function embedUrl(url) {
   const yt = youtubeId(url)
   if (yt) return `https://www.youtube.com/embed/${yt}?autoplay=1&rel=0`
   if (url.includes('vimeo.com')) return `https://player.vimeo.com/video/${url.split('/').pop()}?autoplay=1`
+  
+  // TikTok: converte URL do vídeo para formato embed
+  // A API do TikTok retorna embed_link no formato: https://www.tiktok.com/@username/video/ID
+  if (url.includes('tiktok.com')) {
+    // Tenta extrair o ID do vídeo da URL
+    const match = url.match(/\/video\/(\d+)/)
+    if (match && match[1]) {
+      // Usa o formato embed v2 do TikTok que é projetado para incorporação
+      // Nota: Este iframe pode ter limitações dependendo das configurações da conta
+      return `https://www.tiktok.com/embed/v2/${match[1]}?lang=pt`
+    }
+    // Se não conseguir extrair o ID, retorna a URL original (abrirá no site)
+    console.warn('[embedUrl] Não foi possível extrair ID do vídeo TikTok:', url)
+  }
+  
   return url
 }
 
@@ -222,6 +237,25 @@ function montarModal() {
 export function abrirVideoModal(url) {
   if (!url) return
   montarModal()
+  
+  // Para TikTok, usa embed com aspect ratio correto (9:16 vertical)
+  const isTikTok = url.includes('tiktok.com')
+  
+  if (isTikTok) {
+    // Ajusta o container para proporção vertical do TikTok
+    const caixa = palcoVideo.parentElement
+    caixa.style.aspectRatio = '9/16'
+    caixa.style.maxWidth = 'min(500px, 90vw)'
+    caixa.style.maxHeight = '90vh'
+  } else {
+    // Volta para proporção horizontal padrão (16:9)
+    const caixa = palcoVideo.parentElement
+    caixa.style.aspectRatio = '16/9'
+    caixa.style.maxWidth = 'none'
+    caixa.style.maxHeight = '84vh'
+    caixa.style.width = 'min(1200px,94vw)'
+  }
+  
   palcoVideo.innerHTML = isDirectVideo(url)
     ? `<video src="${esc(url)}" controls autoplay playsinline style="width:100%;height:100%"></video>`
     : `<iframe src="${esc(embedUrl(url))}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe>`

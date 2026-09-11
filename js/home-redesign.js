@@ -680,6 +680,8 @@ async function loadTikTokFeed() {
   try {
     const videos = await fetchTikTokVideos()
     renderTikTokVideos(videos, container)
+    // Usa o mesmo sistema de players da seção de vídeos
+    wirePlayers(container)
     observeIn(container)
   } catch (error) {
     console.error('[home-redesign] Erro ao carregar feed do TikTok:', error)
